@@ -136,7 +136,7 @@ class CharactersScreen extends HookConsumerWidget {
       return () => tabController.removeListener(handleTabSelection);
     }, [tabController]);
     
-    // Arama değişimini izlemek için useEffect
+    // useEffect ile arama değişimini izlemek için useEffect
     useEffect(() {
       void onSearchChanged() {
         final filters = ref.read(characterFiltersProvider);
@@ -214,20 +214,38 @@ class CharactersScreen extends HookConsumerWidget {
           return StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
-                title: const Text(AppStrings.charactersFilterTitle),
+                backgroundColor: AppTheme.gryffindorRed, // Arka plan kırmızı olarak değiştirildi
+                title: Text(
+                  AppStrings.charactersFilterTitle,
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Ev filtresi
-                      const Text(AppStrings.charactersFilterHouse),
+                      Text(
+                        AppStrings.charactersFilterHouse,
+                        style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: houses.map((house) {
                           return FilterChip(
-                            label: Text(house),
+                            label: Text(
+                              house,
+                              style: TextStyle(
+                                color: selectedHouses.contains(house) 
+                                    ? Colors.black // Seçiliyse siyah metin (turuncu üzerinde)
+                                    : Colors.black87, // Seçili değilse koyu metin
+                              ),
+                            ),
                             selected: selectedHouses.contains(house),
+                            selectedColor: AppTheme.goldAccent, // Seçili chip turuncu
+                            backgroundColor: Colors.white.withOpacity(0.8), // Arka plan opak beyaz
+                            checkmarkColor: Colors.black, // Tik işareti siyah
                             onSelected: (selected) {
                               setState(() {
                                 if (selected) {
@@ -241,14 +259,30 @@ class CharactersScreen extends HookConsumerWidget {
                         }).toList(),
                       ),
                       
+                      const SizedBox(height: 16),
+                      
                       // Tür filtresi
-                      const Text(AppStrings.charactersFilterSpecies),
+                      Text(
+                        AppStrings.charactersFilterSpecies,
+                        style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: species.map((specie) {
                           return FilterChip(
-                            label: Text(specie),
+                            label: Text(
+                              specie,
+                              style: TextStyle(
+                                color: selectedSpecies.contains(specie) 
+                                    ? Colors.black 
+                                    : Colors.black87,
+                              ),
+                            ),
                             selected: selectedSpecies.contains(specie),
+                            selectedColor: AppTheme.goldAccent,
+                            backgroundColor: Colors.white.withOpacity(0.8),
+                            checkmarkColor: Colors.black,
                             onSelected: (selected) {
                               setState(() {
                                 if (selected) {
@@ -262,14 +296,30 @@ class CharactersScreen extends HookConsumerWidget {
                         }).toList(),
                       ),
                       
+                      const SizedBox(height: 16),
+                      
                       // Cinsiyet filtresi
-                      const Text(AppStrings.charactersFilterGender),
+                      Text(
+                        AppStrings.charactersFilterGender,
+                        style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: genders.map((gender) {
                           return FilterChip(
-                            label: Text(gender),
+                            label: Text(
+                              gender,
+                              style: TextStyle(
+                                color: selectedGenders.contains(gender) 
+                                    ? Colors.black 
+                                    : Colors.black87,
+                              ),
+                            ),
                             selected: selectedGenders.contains(gender),
+                            selectedColor: AppTheme.goldAccent,
+                            backgroundColor: Colors.white.withOpacity(0.8),
+                            checkmarkColor: Colors.black,
                             onSelected: (selected) {
                               setState(() {
                                 if (selected) {
@@ -283,14 +333,30 @@ class CharactersScreen extends HookConsumerWidget {
                         }).toList(),
                       ),
                       
+                      const SizedBox(height: 16),
+                      
                       // Soy filtresi
-                      const Text(AppStrings.charactersFilterAncestry),
+                      Text(
+                        AppStrings.charactersFilterAncestry,
+                        style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         children: ancestries.map((ancestry) {
                           return FilterChip(
-                            label: Text(ancestry),
+                            label: Text(
+                              ancestry,
+                              style: TextStyle(
+                                color: selectedAncestries.contains(ancestry) 
+                                    ? Colors.black 
+                                    : Colors.black87,
+                              ),
+                            ),
                             selected: selectedAncestries.contains(ancestry),
+                            selectedColor: AppTheme.goldAccent,
+                            backgroundColor: Colors.white.withOpacity(0.8),
+                            checkmarkColor: Colors.black,
                             onSelected: (selected) {
                               setState(() {
                                 if (selected) {
@@ -308,7 +374,10 @@ class CharactersScreen extends HookConsumerWidget {
                 ),
                 actions: [
                   TextButton(
-                    child: const Text(AppStrings.apply),
+                    child: const Text(
+                      AppStrings.apply,
+                      style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold),
+                    ),
                     onPressed: () {
                       ref.read(characterFiltersProvider.notifier).state = CharacterFilters(
                         searchQuery: currentFilters.searchQuery,
@@ -321,7 +390,10 @@ class CharactersScreen extends HookConsumerWidget {
                     },
                   ),
                   TextButton(
-                    child: const Text(AppStrings.clear),
+                    child: const Text(
+                      AppStrings.clear,
+                      style: TextStyle(color: Colors.white),
+                    ),
                     onPressed: () {
                       clearFilters();
                       Navigator.of(context).pop();
@@ -392,7 +464,7 @@ class CharactersScreen extends HookConsumerWidget {
           // Filtre butonu
           Container(
             decoration: BoxDecoration(
-              color: filters.hasFilters()
+              color: (filters.hasFilters() || showSearchBar.value) // Arama aktifken veya filtre varken arka plan rengini değiştir
                   ? Colors.white.withOpacity(0.15)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
@@ -400,12 +472,21 @@ class CharactersScreen extends HookConsumerWidget {
             child: IconButton(
               icon: Icon(
                 Icons.filter_list,
-                color: filters.hasFilters() ? AppTheme.goldAccent : Theme.of(context).colorScheme.onPrimary,
+                // Arama aktifken veya filtre varken rengi değiştir
+                color: (filters.hasFilters() || showSearchBar.value) 
+                    ? AppTheme.goldAccent 
+                    : Theme.of(context).colorScheme.onPrimary,
                 size: AppDimensions.iconSizeLarge,
               ),
               onPressed: () {
                 // API'den tüm karakterleri aldıysak filtreleme dialogunu göster
                 if (allCharactersAsync.value != null) {
+                  // Eğer arama yapılıyorsa, şimdiki arama sorgusunu filtreye ekle
+                  if (showSearchBar.value && searchController.text.isNotEmpty) {
+                    final currentFilters = ref.read(characterFiltersProvider);
+                    ref.read(characterFiltersProvider.notifier).state = 
+                        currentFilters.copyWith(searchQuery: searchController.text);
+                  }
                   showFilterDialog(allCharactersAsync.value!);
                 }
               },
