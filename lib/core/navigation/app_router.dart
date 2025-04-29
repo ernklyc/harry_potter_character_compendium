@@ -74,27 +74,40 @@ class ScaffoldWithNavBar extends StatelessWidget {
           }
         },
         backgroundColor: isDark ? colors.surface.withOpacity(0.5) : AppTheme.gryffindorRed,
-        indicatorColor: AppTheme.goldAccent.withOpacity(0.8),
+        indicatorColor: Colors.white.withOpacity(0.15), // Hafif beyaz arka plan
         height: 65,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         animationDuration: const Duration(milliseconds: 500),
         
         destinations: [
           NavigationDestination(
-            icon: Icon(Icons.person_outline, color: Colors.white.withOpacity(0.7)),
-            selectedIcon: const Icon(Icons.person, color: AppTheme.primarySeed),
+            icon: Icon(Icons.person_outline, color: Colors.white),
+            selectedIcon: Icon(Icons.person, color: AppTheme.goldAccent),
             label: 'Karakterler',
             tooltip: 'Karakterleri Görüntüle',
           ),
           NavigationDestination(
-            icon: Icon(Icons.auto_fix_high_outlined, color: Colors.white.withOpacity(0.7)),
-            selectedIcon: const Icon(Icons.auto_fix_high, color: AppTheme.primarySeed),
+            icon: Icon(Icons.auto_fix_high_outlined, color: Colors.white),
+            selectedIcon: Icon(Icons.auto_fix_high, color: AppTheme.goldAccent),
             label: 'Büyüler',
             tooltip: 'Büyüleri Görüntüle',
           ),
         ],
         surfaceTintColor: Colors.transparent,
         elevation: 3,
+        labelTextStyle: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return GoogleFonts.lato(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.goldAccent,
+            );
+          }
+          return GoogleFonts.lato(
+            fontSize: 11,
+            color: Colors.white,
+          );
+        }),
       ),
     );
   }

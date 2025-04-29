@@ -104,7 +104,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 colors: [
                   AppTheme.gryffindorPrimary.withOpacity(0.9),
                   AppTheme.gryffindorPrimary,
-                  // AppTheme.gryffindorPrimary.withOpacity(0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -114,8 +113,13 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
           bottom: TabBar(
             controller: _tabController,
             isScrollable: false,
-            indicatorWeight: 3,
-            indicatorPadding: EdgeInsets.symmetric(horizontal: 8.0),
+            indicatorSize: TabBarIndicatorSize.tab,
+            labelColor: AppTheme.goldAccent, // Gryffindor altın rengi
+            unselectedLabelColor: Colors.white, // Seçili olmayan beyaz
+            indicator: BoxDecoration(
+              color: Colors.white.withOpacity(0.15), // Hafif beyaz arka plan
+              borderRadius: BorderRadius.circular(8.0), // Yuvarlak köşeler
+            ),
             tabs: const [
               Tab(icon: Icon(Icons.people_alt_outlined), text: 'Tümü'),
               Tab(icon: Icon(Icons.school_outlined), text: 'Öğrenciler'),
