@@ -434,6 +434,7 @@ class CharactersScreen extends HookConsumerWidget {
         actions: [
           // Arama butonu
           Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
               color: showSearchBar.value
                   ? Colors.white.withOpacity(0.15)
@@ -457,6 +458,7 @@ class CharactersScreen extends HookConsumerWidget {
           
           // Filtre butonu
           Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
               color: filters.hasFilters() // Sadece filtre varken arka plan rengini değiştir
                   ? Colors.white.withOpacity(0.15)
@@ -490,6 +492,7 @@ class CharactersScreen extends HookConsumerWidget {
           // Birleştirilmiş temizleme butonu: ya arama aktifse ya da filtreler aktifse göster
           if ((showSearchBar.value && searchController.text.isNotEmpty) || filters.hasFilters())
             Container(
+              margin: const EdgeInsets.only(left: 4, right: 8),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
