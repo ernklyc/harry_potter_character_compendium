@@ -45,10 +45,11 @@ class CharacterCard extends StatelessWidget {
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Karakter resmi
             SizedBox(
-              height: 180,
+              height: 150,
               child: character.image != null && character.image!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: character.image!,
@@ -67,7 +68,8 @@ class CharacterCard extends StatelessWidget {
             // Karakter bilgileri
             Container(
               color: houseColor.withAlpha((0.1 * 255).round()),
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(8),
+              constraints: BoxConstraints(maxHeight: 120),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -81,32 +83,32 @@ class CharacterCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   if (character.house.isNotEmpty)
                     Text(
                       'Ev: ${character.house}',
-                      style: const TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   if (character.wizard)
                     const Text(
                       'Büyücü',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   if (character.hogwartsStudent)
                     const Text(
                       'Hogwarts Öğrencisi',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   if (character.hogwartsStaff)
                     const Text(
                       'Hogwarts Personeli',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 12),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

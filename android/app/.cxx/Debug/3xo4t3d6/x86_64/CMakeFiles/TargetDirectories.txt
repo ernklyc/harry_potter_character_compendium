@@ -1,0 +1,2 @@
+C:/harry_potter_character_compendium/android/app/.cxx/Debug/3xo4t3d6/x86_64/CMakeFiles/edit_cache.dir
+C:/harry_potter_character_compendium/android/app/.cxx/Debug/3xo4t3d6/x86_64/CMakeFiles/rebuild_cache.dir

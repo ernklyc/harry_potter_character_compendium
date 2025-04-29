@@ -43,94 +43,95 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Harry Potter Karakterleri'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Tümü'),
-            Tab(text: 'Öğrenciler'),
-            Tab(text: 'Personel'),
-            Tab(text: 'Gryffindor'),
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Harry Potter Karakterleri'),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Tümü'),
+              Tab(text: 'Öğrenciler'),
+              Tab(text: 'Personel'),
+              Tab(text: 'Gryffindor'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // Tüm karakterler sekmesi
+            allCharacters.when(
+              data: (characters) => CharacterList(
+                characters: characters,
+                onCharacterTap: navigateToCharacterDetail,
+              ),
+              loading: () => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                isLoading: true,
+              ),
+              error: (err, stack) => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                errorMessage: 'Karakterler yüklenirken bir hata oluştu: $err',
+              ),
+            ),
+            
+            // Öğrenciler sekmesi
+            hogwartsStudents.when(
+              data: (characters) => CharacterList(
+                characters: characters,
+                onCharacterTap: navigateToCharacterDetail,
+              ),
+              loading: () => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                isLoading: true,
+              ),
+              error: (err, stack) => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                errorMessage: 'Öğrenciler yüklenirken bir hata oluştu: $err',
+              ),
+            ),
+            
+            // Personel sekmesi
+            hogwartsStaff.when(
+              data: (characters) => CharacterList(
+                characters: characters,
+                onCharacterTap: navigateToCharacterDetail,
+              ),
+              loading: () => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                isLoading: true,
+              ),
+              error: (err, stack) => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                errorMessage: 'Personel yüklenirken bir hata oluştu: $err',
+              ),
+            ),
+            
+            // Gryffindor sekmesi
+            gryffindorCharacters.when(
+              data: (characters) => CharacterList(
+                characters: characters,
+                onCharacterTap: navigateToCharacterDetail,
+              ),
+              loading: () => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                isLoading: true,
+              ),
+              error: (err, stack) => CharacterList(
+                characters: const [],
+                onCharacterTap: (_) {}, // Boş fonksiyon
+                errorMessage: 'Gryffindor üyeleri yüklenirken bir hata oluştu: $err',
+              ),
+            ),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Tüm karakterler sekmesi
-          allCharacters.when(
-            data: (characters) => CharacterList(
-              characters: characters,
-              onCharacterTap: navigateToCharacterDetail,
-            ),
-            loading: () => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              isLoading: true,
-            ),
-            error: (err, stack) => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              errorMessage: 'Karakterler yüklenirken bir hata oluştu: $err',
-            ),
-          ),
-          
-          // Öğrenciler sekmesi
-          hogwartsStudents.when(
-            data: (characters) => CharacterList(
-              characters: characters,
-              onCharacterTap: navigateToCharacterDetail,
-            ),
-            loading: () => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              isLoading: true,
-            ),
-            error: (err, stack) => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              errorMessage: 'Öğrenciler yüklenirken bir hata oluştu: $err',
-            ),
-          ),
-          
-          // Personel sekmesi
-          hogwartsStaff.when(
-            data: (characters) => CharacterList(
-              characters: characters,
-              onCharacterTap: navigateToCharacterDetail,
-            ),
-            loading: () => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              isLoading: true,
-            ),
-            error: (err, stack) => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              errorMessage: 'Personel yüklenirken bir hata oluştu: $err',
-            ),
-          ),
-          
-          // Gryffindor sekmesi
-          gryffindorCharacters.when(
-            data: (characters) => CharacterList(
-              characters: characters,
-              onCharacterTap: navigateToCharacterDetail,
-            ),
-            loading: () => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              isLoading: true,
-            ),
-            error: (err, stack) => CharacterList(
-              characters: const [],
-              onCharacterTap: (_) {}, // Boş fonksiyon
-              errorMessage: 'Gryffindor üyeleri yüklenirken bir hata oluştu: $err',
-            ),
-          ),
-        ],
       ),
     );
   }

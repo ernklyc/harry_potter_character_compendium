@@ -4,7 +4,7 @@
             "outputFile": "com.example.harry_potter_character_compendium.app-mergeDebugResources-24:/values-ur/values-ur.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\ernkl\\.gradle\\caches\\transforms-3\\ccdc6ae33fb27e0f1cc143693065784c\\transformed\\core-1.13.1\\res\\values-ur\\values-ur.xml",
+                    "source": "C:\\Users\\ernkl\\.gradle\\caches\\transforms-3\\bbc9752949924cc6d0fc540d64e0cf11\\transformed\\core-1.13.1\\res\\values-ur\\values-ur.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
