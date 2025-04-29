@@ -44,8 +44,8 @@ class SpellsScreen extends ConsumerWidget {
               final spell = spells[index];
               return SpellCard(spell: spell)
                   .animate()
-                  .fadeIn(duration: 300.ms, delay: (50 * index).ms)
-                  .slideY(begin: 0.1, curve: Curves.easeOut);
+                  .fadeIn(duration: 200.ms, delay: (30 * index).ms)
+                  .slideY(begin: 0.05, duration: 200.ms, curve: Curves.easeOut);
             },
           );
         },

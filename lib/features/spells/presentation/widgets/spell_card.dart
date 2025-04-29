@@ -3,10 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:harry_potter_character_compendium/features/spells/data/models/spell_model.dart';
 
-class SpellCard extends StatelessWidget {
+// StatefulWidget'a dönüştürüldü
+class SpellCard extends StatefulWidget {
   final Spell spell;
 
   const SpellCard({super.key, required this.spell});
+
+  @override
+  State<SpellCard> createState() => _SpellCardState();
+}
+
+class _SpellCardState extends State<SpellCard> {
+  bool _isExpanded = false; // Genişleme durumu için state
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +22,7 @@ class SpellCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      elevation: 2,
+      elevation: _isExpanded ? 4 : 2, // Genişleyince gölge artsın
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -23,53 +31,66 @@ class SpellCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          // Tıklama aksiyonu - belki detay modalı açılabilir?
-           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('${spell.name} büyüsü etkisi: ${spell.description}')),
-           );
+          // Durumu değiştirip yeniden çizim tetikle
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
         },
         borderRadius: BorderRadius.circular(10),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Büyü ikonu (örneğin, rastgele veya türe göre)
               Icon(
-                Icons.auto_fix_high, // Şimdilik sabit ikon
+                Icons.auto_fix_high,
                 color: AppTheme.goldAccent,
                 size: 30,
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      spell.name,
-                      style: GoogleFonts.cinzelDecorative(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? AppTheme.goldAccent : AppTheme.gryffindorRed,
-                      ),
-                    ),
-                    if (spell.description.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Text(
-                          spell.description,
-                          style: GoogleFonts.lato(
-                            fontSize: 14,
-                            color: colors.onSurface.withOpacity(0.7),
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  alignment: Alignment.topCenter,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.spell.name,
+                        style: GoogleFonts.cinzelDecorative(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppTheme.goldAccent : AppTheme.gryffindorRed,
                         ),
                       ),
-                  ],
+                      if (widget.spell.description.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            widget.spell.description,
+                            style: GoogleFonts.lato(
+                              fontSize: 14,
+                              color: colors.onSurface.withOpacity(0.7),
+                            ),
+                            // Genişleme durumuna göre maxLines ayarı
+                            maxLines: _isExpanded ? null : 2,
+                            overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-              // Belki büyü türü veya zorluk seviyesi ikonu?
-              // Icon(Icons.star_border, color: colors.onSurface.withOpacity(0.5))
+              // Genişletme/Daraltma İkonu
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0), // İkonu sağa yasla
+                child: Icon(
+                  _isExpanded ? Icons.expand_less : Icons.expand_more,
+                  color: colors.onSurface.withOpacity(0.5),
+                ),
+              )
             ],
           ),
         ),

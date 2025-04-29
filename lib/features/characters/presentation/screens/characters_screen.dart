@@ -17,15 +17,32 @@ class CharactersScreen extends ConsumerStatefulWidget {
 
 class _CharactersScreenState extends ConsumerState<CharactersScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String _currentTitle = "Karakterler"; // Başlangıç başlığı
+  final List<String> _tabTitles = const ["Tümü", "Öğrenciler", "Personel", "Gryffindor"]; // Sekme başlıkları
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _currentTitle = _tabTitles[_tabController.index]; // İlk başlığı ayarla
+    _tabController.addListener(_handleTabSelection); // Listener ekle
+  }
+
+  // Listener fonksiyonu
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      // Sekme değişimi henüz bitmediyse işlem yapma (opsiyonel)
+    } else {
+      // Sekme tamamen değiştiğinde başlığı güncelle
+      setState(() {
+        _currentTitle = _tabTitles[_tabController.index];
+      });
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabSelection); // Listener'ı kaldır
     _tabController.dispose();
     super.dispose();
   }
@@ -67,6 +84,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
       length: 4,
       child: Scaffold(
         appBar: AppBar(
+          title: Text(_currentTitle), // Dinamik başlık
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
