@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart';
@@ -10,6 +11,7 @@ import 'package:harry_potter_character_compendium/features/spells/presentation/w
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list_shimmer.dart';
 import 'package:harry_potter_character_compendium/features/spells/data/models/spell_model.dart';
 import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
+
 
 // Büyü filtreleme durumunu yönetmek için state provider
 final spellFiltersProvider = StateProvider<SpellFilters>((ref) {
@@ -54,72 +56,64 @@ class SpellFilters {
   }
 }
 
-class SpellsScreen extends ConsumerStatefulWidget {
+// ConsumerStatefulWidget yerine HookConsumerWidget kullanıldı
+class SpellsScreen extends HookConsumerWidget { 
   const SpellsScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<SpellsScreen> createState() => _SpellsScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Hook'lar build metodunun başında tanımlanmalı
+    final searchController = useTextEditingController();
+    final showSearchBar = useState(false);
 
-class _SpellsScreenState extends ConsumerState<SpellsScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  bool _showSearchBar = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  // Arama değiştiğinde çağrılır
-  void _onSearchChanged() {
-    final filters = ref.read(spellFiltersProvider);
-    ref.read(spellFiltersProvider.notifier).state = 
-        filters.copyWith(searchQuery: _searchController.text);
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  // Aktif filtreleri temizle
-  void _clearFilters() {
-    ref.read(spellFiltersProvider.notifier).state = SpellFilters();
-    _searchController.clear();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    // Provider'lar ve tema izleniyor
     final allSpellsAsync = ref.watch(allSpellsProvider);
     final filters = ref.watch(spellFiltersProvider);
     final theme = Theme.of(context);
 
-    // Arama ve filtrelemeye göre büyüleri filtrele
-    List<Spell> _filterSpells(List<Spell> spells) {
+    // Arama metni değişimini dinlemek için useEffect hook'u
+    useEffect(() {
+      void onSearchChanged() {
+        final currentFilters = ref.read(spellFiltersProvider);
+        // Sadece gerçekten değiştiyse provider'ı güncelle
+        if (currentFilters.searchQuery != searchController.text) {
+          ref.read(spellFiltersProvider.notifier).state =
+              currentFilters.copyWith(searchQuery: searchController.text);
+        }
+      }
+      searchController.addListener(onSearchChanged);
+      // Listener'ı temizle
+      return () => searchController.removeListener(onSearchChanged);
+    }, [searchController, ref]); // ref bağımlılıklara eklendi
+
+    // Yardımcı fonksiyonlar (build metodu içinde)
+    List<Spell> filterSpells(List<Spell> spells) {
       if (!filters.hasFilters()) return spells;
       return spells.where((spell) => filters.matchesSpell(spell)).toList();
     }
 
+    void clearFilters() {
+      ref.read(spellFiltersProvider.notifier).state = SpellFilters();
+      searchController.clear();
+      // Arama çubuğu açıksa kapatılabilir (isteğe bağlı)
+      // showSearchBar.value = false; 
+    }
+
     return Scaffold(
       appBar: AppBar(
-        leading: _showSearchBar 
+        leading: showSearchBar.value
             ? IconButton(
                 icon: const Icon(Icons.arrow_back, size: AppDimensions.iconSizeLarge),
                 onPressed: () {
-                  setState(() {
-                    _showSearchBar = false;
-                  });
-                  // Aramayı temizle
-                  _searchController.clear();
+                  showSearchBar.value = false;
+                  // Arama çubuğu kapandığında filtreleri temizle
+                  clearFilters(); 
                 },
               )
             : null,
-        title: _showSearchBar 
+        title: showSearchBar.value
             ? TextField(
-                controller: _searchController,
+                controller: searchController, // Hook'tan gelen controller
                 style: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white),
                 autofocus: true,
                 cursorColor: AppTheme.goldAccent,
@@ -127,11 +121,12 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
                   hintText: AppStrings.spellsSearchHint,
                   border: InputBorder.none,
                   hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
-                  suffixIcon: _searchController.text.isNotEmpty 
+                  // suffixIcon state'e göre yönetiliyor
+                  suffixIcon: searchController.text.isNotEmpty
                       ? IconButton(
                           icon: Icon(Icons.clear, color: theme.colorScheme.onPrimary.withOpacity(0.7), size: AppDimensions.iconSizeMedium),
-                          onPressed: () => _searchController.clear(),
-                        ) 
+                          onPressed: () => searchController.clear(),
+                        )
                       : null,
                 ),
               )
@@ -139,31 +134,29 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
                 AppStrings.spellsTitle,
               ),
         actions: [
-          // Arama butonu
           Container(
             decoration: BoxDecoration(
-              color: _showSearchBar
-                  ? Colors.white.withOpacity(0.15) // Arama aktifken beyaz arkaplan
+              color: showSearchBar.value // useState değeri kullanılıyor
+                  ? Colors.white.withOpacity(0.15)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
             ),
             child: IconButton(
               icon: Icon(
-                _showSearchBar ? Icons.clear : Icons.search,
-                color: _showSearchBar ? AppTheme.goldAccent : theme.colorScheme.onPrimary,
+                showSearchBar.value ? Icons.clear : Icons.search, // useState değeri
+                color: showSearchBar.value ? AppTheme.goldAccent : theme.colorScheme.onPrimary,
                 size: AppDimensions.iconSizeLarge,
               ),
               onPressed: () {
-                setState(() {
-                  _showSearchBar = !_showSearchBar;
-                  if (!_showSearchBar) {
-                    _searchController.clear();
-                  }
-                });
+                showSearchBar.value = !showSearchBar.value;
+                // Arama çubuğu kapatıldığında filtreleri temizle
+                if (!showSearchBar.value) {
+                  clearFilters();
+                }
               },
             ),
           ),
-          // Aktif filtreler varsa, temizleme butonu
+          // Aktif filtreler varsa temizleme butonu
           if (filters.hasFilters())
             Container(
               margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
@@ -181,7 +174,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
                   color: theme.colorScheme.onPrimary,
                   size: AppDimensions.iconSizeLarge,
                 ),
-                onPressed: _clearFilters,
+                onPressed: clearFilters, // Temizleme fonksiyonunu kullan
                 tooltip: AppStrings.spellsClearFilters,
               ),
             ),
@@ -189,7 +182,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
       ),
       body: allSpellsAsync.when(
         data: (spells) {
-          final filteredSpells = _filterSpells(spells);
+          final filteredSpells = filterSpells(spells); // filterSpells fonksiyonu kullanılıyor
           
           if (filteredSpells.isEmpty) {
             return RefreshIndicator(
@@ -216,7 +209,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
                       if (filters.hasFilters()) ...[
                         const SizedBox(height: AppDimensions.paddingMedium),
                         ElevatedButton.icon(
-                          onPressed: _clearFilters,
+                          onPressed: clearFilters, // Temizleme fonksiyonunu kullan
                           icon: const Icon(Icons.clear_all, size: AppDimensions.iconSizeMedium),
                           label: const Text(AppStrings.spellsClearFilters),
                           style: ElevatedButton.styleFrom(

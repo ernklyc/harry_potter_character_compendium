@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 // import 'package:google_fonts/google_fonts.dart'; // Kaldırıldı
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart'; // Artık AppStrings kullanılacak
 import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; 
@@ -15,36 +17,55 @@ import 'package:harry_potter_character_compendium/features/spells/presentation/w
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list_shimmer.dart';
 import 'package:harry_potter_character_compendium/features/favorites/domain/providers/favorite_providers.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context); // Tema alındı
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(AppStrings.favoritesTitle),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: AppStrings.favoritesTabCharacters, icon: Icon(Icons.person_outline)),
-              Tab(text: AppStrings.favoritesTabSpells, icon: Icon(Icons.auto_fix_high_outlined)),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            _buildFavoriteCharacters(context, ref),
-            _buildFavoriteSpells(context, ref),
+    // Mevcut sekmeyi izlemek için useState hook'u
+    final selectedTabIndex = useState(0);
+    
+    // Hook kullanarak TabController oluştur
+    final tabController = useTabController(initialLength: 2);
+    
+    // Tab değişimini izlemek için useEffect
+    useEffect(() {
+      void handleTabChange() {
+        if (!tabController.indexIsChanging) {
+          selectedTabIndex.value = tabController.index;
+        }
+      }
+      
+      tabController.addListener(handleTabChange);
+      return () => tabController.removeListener(handleTabChange);
+    }, [tabController]);
+    
+    // Favorileri izle
+    final favoriteCharacterIds = ref.watch(favoriteCharactersProvider);
+    final favoriteSpellIds = ref.watch(favoriteSpellsProvider);
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(AppStrings.favoritesTitle),
+        bottom: TabBar(
+          controller: tabController,
+          tabs: const [
+            Tab(text: AppStrings.favoritesTabCharacters, icon: Icon(Icons.person_outline)),
+            Tab(text: AppStrings.favoritesTabSpells, icon: Icon(Icons.auto_fix_high_outlined)),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: [
+          _buildFavoriteCharacters(context, ref, favoriteCharacterIds),
+          _buildFavoriteSpells(context, ref, favoriteSpellIds),
+        ],
       ),
     );
   }
 
-  Widget _buildFavoriteCharacters(BuildContext context, WidgetRef ref) {
-    final favoriteCharacterIds = ref.watch(favoriteCharactersProvider);
+  Widget _buildFavoriteCharacters(BuildContext context, WidgetRef ref, Set<String> favoriteCharacterIds) {
     final allCharactersAsync = ref.watch(allCharactersProvider);
 
     return allCharactersAsync.when(
@@ -91,8 +112,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFavoriteSpells(BuildContext context, WidgetRef ref) {
-    final favoriteSpellIds = ref.watch(favoriteSpellsProvider);
+  Widget _buildFavoriteSpells(BuildContext context, WidgetRef ref, Set<String> favoriteSpellIds) {
     final allSpellsAsync = ref.watch(allSpellsProvider);
 
     return allSpellsAsync.when(
@@ -124,7 +144,6 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyFavoritesView(BuildContext context, String message) {
-    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -132,7 +151,7 @@ class ProfileScreen extends ConsumerWidget {
           Icon(
             Icons.favorite_border,
             size: AppDimensions.iconSizeExtraLarge * 2.5,
-            color: theme.colorScheme.onSurface.withOpacity(0.4),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
           ),
           const SizedBox(height: AppDimensions.paddingLarge),
           Text(
