@@ -136,7 +136,7 @@ class CharacterCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (character.hogwartsStudent)
-                      _buildInfoChip('Öğrenci', Icons.school, houseColor, isDark),
+                      _buildInfoChip('Ögrenci', Icons.school, houseColor, isDark),
                     if (character.hogwartsStaff)
                       _buildInfoChip('Personel', Icons.work, houseColor, isDark),
                     if (character.wizard && !character.hogwartsStudent && !character.hogwartsStaff)

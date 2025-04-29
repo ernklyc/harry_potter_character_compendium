@@ -6,17 +6,148 @@ import 'package:harry_potter_character_compendium/core/widgets/error_display.dar
 import 'package:harry_potter_character_compendium/features/spells/domain/providers/spells_providers.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_card.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list_shimmer.dart';
+import 'package:harry_potter_character_compendium/features/spells/data/models/spell_model.dart';
 
-class SpellsScreen extends ConsumerWidget {
+// Büyü filtreleme durumunu yönetmek için state provider
+final spellFiltersProvider = StateProvider<SpellFilters>((ref) {
+  return SpellFilters();
+});
+
+// Filtreleme için kullanılacak model
+class SpellFilters {
+  final String searchQuery;
+
+  SpellFilters({
+    this.searchQuery = '',
+  });
+
+  SpellFilters copyWith({
+    String? searchQuery,
+  }) {
+    return SpellFilters(
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
+  }
+
+  bool hasFilters() {
+    return searchQuery.isNotEmpty;
+  }
+
+  bool matchesSpell(Spell spell) {
+    // Arama sorgusuna göre filtreleme
+    if (searchQuery.isNotEmpty) {
+      // Büyü adında arama
+      final nameMatch = spell.name.toLowerCase().contains(searchQuery.toLowerCase());
+      // Büyü açıklamasında arama
+      final descMatch = spell.description.toLowerCase().contains(searchQuery.toLowerCase());
+      
+      // İsim veya açıklamada eşleşme yoksa false döndür
+      if (!nameMatch && !descMatch) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+}
+
+class SpellsScreen extends ConsumerStatefulWidget {
   const SpellsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SpellsScreen> createState() => _SpellsScreenState();
+}
+
+class _SpellsScreenState extends ConsumerState<SpellsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _showSearchBar = false;
+  bool _showFilterDialog = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  // Arama değiştiğinde çağrılır
+  void _onSearchChanged() {
+    final filters = ref.read(spellFiltersProvider);
+    ref.read(spellFiltersProvider.notifier).state = 
+        filters.copyWith(searchQuery: _searchController.text);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // Aktif filtreleri temizle
+  void _clearFilters() {
+    ref.read(spellFiltersProvider.notifier).state = SpellFilters();
+    _searchController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final allSpellsAsync = ref.watch(allSpellsProvider);
+    final filters = ref.watch(spellFiltersProvider);
+
+    // Arama ve filtrelemeye göre büyüleri filtrele
+    List<Spell> _filterSpells(List<Spell> spells) {
+      if (!filters.hasFilters()) return spells;
+      return spells.where((spell) => filters.matchesSpell(spell)).toList();
+    }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Büyüler'),
+        leading: _showSearchBar 
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    _showSearchBar = false;
+                  });
+                  // Aramayı temizle
+                  _searchController.clear();
+                },
+              )
+            : null,
+        title: _showSearchBar 
+            ? TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Büyü Ara...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.white),
+                autofocus: true,
+                cursorColor: Colors.white,
+              )
+            : const Text('Büyüler'),
+        actions: [
+          // Arama butonu
+          IconButton(
+            icon: Icon(_showSearchBar ? Icons.clear : Icons.search),
+            onPressed: () {
+              setState(() {
+                _showSearchBar = !_showSearchBar;
+                if (!_showSearchBar) {
+                  _searchController.clear();
+                }
+              });
+            },
+          ),
+          // Aktif filtreler varsa, temizleme butonu
+          if (filters.hasFilters())
+            IconButton(
+              icon: const Icon(Icons.clear_all),
+              onPressed: _clearFilters,
+              tooltip: 'Filtreleri Temizle',
+            ),
+        ],
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -32,21 +163,28 @@ class SpellsScreen extends ConsumerWidget {
       ),
       body: allSpellsAsync.when(
         data: (spells) {
-          if (spells.isEmpty) {
+          final filteredSpells = _filterSpells(spells);
+          
+          if (filteredSpells.isEmpty) {
             return RefreshIndicator(
-               onRefresh: () => ref.refresh(allSpellsProvider.future),
-               child: const Center(
-                child: Text('Gösterilecek büyü bulunamadı.'),
-               ),
-             );
+              onRefresh: () => ref.refresh(allSpellsProvider.future),
+              child: Center(
+                child: Text(
+                  filters.hasFilters() 
+                      ? 'Arama kriterlerinize uygun büyü bulunamadı.' 
+                      : 'Gösterilecek büyü bulunamadı.',
+                ),
+              ),
+            );
           }
+          
           return RefreshIndicator(
             onRefresh: () => ref.refresh(allSpellsProvider.future),
             child: ListView.builder(
               padding: const EdgeInsets.only(top: 8, bottom: 8),
-              itemCount: spells.length,
+              itemCount: filteredSpells.length,
               itemBuilder: (context, index) {
-                final spell = spells[index];
+                final spell = filteredSpells[index];
                 return SpellCard(spell: spell)
                     .animate()
                     .fadeIn(duration: 200.ms, delay: (30 * index).ms)
@@ -57,8 +195,8 @@ class SpellsScreen extends ConsumerWidget {
         },
         loading: () => const SpellListShimmer(),
         error: (err, stack) => RefreshIndicator(
-           onRefresh: () => ref.refresh(allSpellsProvider.future),
-           child: ErrorDisplay(
+          onRefresh: () => ref.refresh(allSpellsProvider.future),
+          child: ErrorDisplay(
             message: 'Büyüler yüklenirken bir hata oluştu.',
             onRetry: () => ref.invalidate(allSpellsProvider),
           ),
