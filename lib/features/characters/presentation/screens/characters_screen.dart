@@ -428,12 +428,6 @@ class CharactersScreen extends HookConsumerWidget {
                   hintText: AppStrings.charactersSearchHint,
                   border: InputBorder.none,
                   hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7), size: AppDimensions.iconSizeMedium),
-                          onPressed: () => searchController.clear(),
-                        )
-                      : null,
                 ),
               )
             : Text(currentTitle.value),
@@ -464,7 +458,7 @@ class CharactersScreen extends HookConsumerWidget {
           // Filtre butonu
           Container(
             decoration: BoxDecoration(
-              color: (filters.hasFilters() || showSearchBar.value) // Arama aktifken veya filtre varken arka plan rengini değiştir
+              color: filters.hasFilters() // Sadece filtre varken arka plan rengini değiştir
                   ? Colors.white.withOpacity(0.15)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
@@ -472,8 +466,8 @@ class CharactersScreen extends HookConsumerWidget {
             child: IconButton(
               icon: Icon(
                 Icons.filter_list,
-                // Arama aktifken veya filtre varken rengi değiştir
-                color: (filters.hasFilters() || showSearchBar.value) 
+                // Sadece filtre varken rengi değiştir
+                color: filters.hasFilters() 
                     ? AppTheme.goldAccent 
                     : Theme.of(context).colorScheme.onPrimary,
                 size: AppDimensions.iconSizeLarge,
@@ -493,13 +487,23 @@ class CharactersScreen extends HookConsumerWidget {
             ),
           ),
           
-          // Aktif filtre varsa temizleme butonu
-          if (filters.hasFilters())
-            IconButton(
-              icon: const Icon(Icons.clear_all, size: AppDimensions.iconSizeLarge),
-              color: AppTheme.goldAccent,
-              onPressed: clearFilters,
-              tooltip: AppStrings.charactersFilterClearTooltip,
+          // Birleştirilmiş temizleme butonu: ya arama aktifse ya da filtreler aktifse göster
+          if ((showSearchBar.value && searchController.text.isNotEmpty) || filters.hasFilters())
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.clear, size: AppDimensions.iconSizeLarge),
+                color: AppTheme.goldAccent,
+                onPressed: () {
+                  // Hem arama metnini hem de tüm filtreleri temizle
+                  searchController.clear();
+                  clearFilters();
+                },
+                tooltip: AppStrings.charactersFilterClearTooltip,
+              ),
             ),
         ],
         bottom: TabBar(
