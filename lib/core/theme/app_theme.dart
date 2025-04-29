@@ -1,59 +1,117 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
+  // Temel Renkler
+  static const Color primarySeed = Color(0xFF3A2A1D); // Koyu Kahverengi (Parşömen/Ahşap)
+  static const Color gryffindorRed = Color(0xFF740001);
+  static const Color goldAccent = Color(0xFFD3A625);
+
   static final light = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF740001), // Gryffindor kırmızısı
+      seedColor: primarySeed,
       brightness: Brightness.light,
+      primary: gryffindorRed,
+      secondary: goldAccent,
+      background: const Color(0xFFFDF8E1), // Açık Parşömen rengi
+      surface: const Color(0xFFFDF8E1), // Açık Parşömen rengi
     ),
-    appBarTheme: const AppBarTheme(
-      elevation: 0,
+    appBarTheme: AppBarTheme(
+      elevation: 1, // Hafif bir gölge
       centerTitle: true,
+      backgroundColor: gryffindorRed, // AppBar Gryffindor Kırmızısı
+      foregroundColor: Colors.white, // AppBar yazı rengi beyaz
+      titleTextStyle: GoogleFonts.cinzelDecorative( // Tematik başlık fontu
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+    tabBarTheme: TabBarTheme( // TabBar özelleştirmesi
+      labelColor: goldAccent,
+      unselectedLabelColor: Colors.white.withOpacity(0.7),
+      indicatorColor: goldAccent,
+      labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
+      unselectedLabelStyle: GoogleFonts.lato(),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        elevation: 0,
+        elevation: 1,
+        backgroundColor: gryffindorRed,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+        textStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
       ),
     ),
     cardTheme: CardTheme(
       elevation: 2,
+      clipBehavior: Clip.antiAlias, // Kenarları yuvarlatılmış resimler için
+      color: const Color(0xFFF5EFE0), // Biraz daha koyu parşömen
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.brown.withOpacity(0.2), width: 1), // İnce çerçeve
       ),
     ),
+    textTheme: GoogleFonts.latoTextTheme(), // Ana metin fontu Lato
   );
 
   static final dark = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF740001), // Gryffindor kırmızısı
+      seedColor: primarySeed,
       brightness: Brightness.dark,
+      primary: gryffindorRed,
+      secondary: goldAccent,
+      background: const Color(0xFF1A120B), // Çok koyu kahverengi/siyah
+      surface: const Color(0xFF2C211A), // Koyu yüzey rengi
     ),
-    appBarTheme: const AppBarTheme(
-      elevation: 0,
+    appBarTheme: AppBarTheme(
+      elevation: 1,
       centerTitle: true,
+      backgroundColor: gryffindorRed,
+      foregroundColor: Colors.white,
+      titleTextStyle: GoogleFonts.cinzelDecorative( // Tematik başlık fontu
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
+    tabBarTheme: TabBarTheme( // TabBar özelleştirmesi
+      labelColor: goldAccent,
+      unselectedLabelColor: Colors.white.withOpacity(0.7),
+      indicatorColor: goldAccent,
+      labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
+      unselectedLabelStyle: GoogleFonts.lato(),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        elevation: 0,
+        elevation: 1,
+        backgroundColor: gryffindorRed,
+        foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+        textStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
       ),
     ),
     cardTheme: CardTheme(
-      elevation: 2,
+      elevation: 3, // Karanlık temada biraz daha belirgin
+      clipBehavior: Clip.antiAlias,
+      color: const Color(0xFF3A2E25), // Koyu kart rengi
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: goldAccent.withOpacity(0.3), width: 1), // Altın çerçeve
       ),
+    ),
+    textTheme: GoogleFonts.latoTextTheme(
+      ThemeData(brightness: Brightness.dark).textTheme, // Karanlık tema için Lato
     ),
   );
 
-  // Hogwarts evleri renkleri
+  // Hogwarts evleri renkleri (Bunları ColorScheme içinde de kullanabiliriz veya direkt erişebiliriz)
   static const gryffindorPrimary = Color(0xFF740001);
   static const gryffindorSecondary = Color(0xFFD3A625);
   static const slytherinPrimary = Color(0xFF1A472A);
