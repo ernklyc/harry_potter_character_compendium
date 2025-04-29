@@ -112,7 +112,7 @@ class CharactersScreen extends ConsumerStatefulWidget {
 class _CharactersScreenState extends ConsumerState<CharactersScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _currentTitle = "Karakterler"; // Başlangıç başlığı
-  final List<String> _tabTitles = const ["Tümü", "Ögrenciler", "Personel", "Gryffindor"]; // Sekme başlıkları
+  final List<String> _tabTitles = const ["Tümü", "Ögrenciler", "Personel"]; 
   final TextEditingController _searchController = TextEditingController();
   bool _showSearchBar = false;
   bool _showFilterDialog = false; // Filtreleme diyaloğunun açık olup olmadığını izler
@@ -120,7 +120,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _currentTitle = _tabTitles[_tabController.index]; // İlk başlığı ayarla
     _tabController.addListener(_handleTabSelection); // Listener ekle
     _searchController.addListener(_onSearchChanged);
@@ -164,9 +164,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
         break;
       case 2:
         ref.invalidate(hogwartsStaffProvider);
-        break;
-      case 3:
-        ref.invalidate(houseCharactersProvider('gryffindor'));
         break;
     }
   }
@@ -430,7 +427,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
     final allCharacters = ref.watch(allCharactersProvider);
     final hogwartsStudents = ref.watch(hogwartsStudentsProvider);
     final hogwartsStaff = ref.watch(hogwartsStaffProvider);
-    final gryffindorCharacters = ref.watch(houseCharactersProvider('gryffindor'));
     final filters = ref.watch(characterFiltersProvider);
     
     void navigateToCharacterDetail(Character character) {
@@ -449,7 +445,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
     }
 
     return DefaultTabController(
-      length: 4,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           leading: _showSearchBar 
@@ -554,17 +550,16 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
             controller: _tabController,
             isScrollable: false,
             indicatorSize: TabBarIndicatorSize.tab,
-            labelColor: AppTheme.goldAccent, // Gryffindor altın rengi
-            unselectedLabelColor: Colors.white, // Seçili olmayan beyaz
+            labelColor: AppTheme.goldAccent, 
+            unselectedLabelColor: Colors.white, 
             indicator: BoxDecoration(
-              color: Colors.white.withOpacity(0.15), // Hafif beyaz arka plan
-              borderRadius: BorderRadius.circular(8.0), // Yuvarlak köşeler
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8.0),
             ),
             tabs: const [
               Tab(icon: Icon(Icons.people_alt_outlined), text: 'Tümü'),
               Tab(icon: Icon(Icons.school_outlined), text: 'Ögrenciler'),
               Tab(icon: Icon(Icons.work_outline), text: 'Personel'),
-              Tab(icon: Icon(Icons.shield_outlined), text: 'Gryffindor'),
             ],
           ),
         ),
@@ -630,27 +625,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 child: ErrorDisplay(
                   message: 'Personel yüklenemedi.',
                   onRetry: () => _retryLoad(ref, 2),
-                ),
-              ),
-            ),
-            
-            gryffindorCharacters.when(
-              data: (characters) {
-                final filteredCharacters = _filterCharacters(characters);
-                return RefreshIndicator(
-                  onRefresh: () => ref.refresh(houseCharactersProvider('gryffindor').future),
-                  child: CharacterList(
-                    characters: filteredCharacters,
-                    onCharacterTap: navigateToCharacterDetail,
-                  ),
-                );
-              },
-              loading: () => const CharacterListShimmer(),
-              error: (err, stack) => RefreshIndicator(
-                onRefresh: () => ref.refresh(houseCharactersProvider('gryffindor').future),
-                child: ErrorDisplay(
-                  message: 'Gryffindor üyeleri yüklenemedi.',
-                  onRetry: () => _retryLoad(ref, 3),
                 ),
               ),
             ),
