@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:harry_potter_character_compendium/core/widgets/error_display.dart';
 import 'package:harry_potter_character_compendium/features/characters/domain/providers/characters_providers.dart';
-import 'package:harry_potter_character_compendium/features/characters/data/models/character_model.dart'; // Character modeli için
 
 class CharacterDetailScreen extends ConsumerWidget {
   final String characterId;
