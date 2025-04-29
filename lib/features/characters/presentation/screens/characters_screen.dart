@@ -218,56 +218,74 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
+            final theme = Theme.of(context);
+            final dialogBackgroundColor = AppTheme.gryffindorPrimary.withOpacity(0.95);
+            final accentColor = AppTheme.goldAccent;
+            final primaryTextColor = Colors.white;
+            final secondaryTextColor = Colors.white70;
+
             return AlertDialog(
-              title: const Text('Karakterleri Filtrele'),
-              contentPadding: const EdgeInsets.only(top: 16),
+              backgroundColor: dialogBackgroundColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              title: Text(
+                'Karakterleri Filtrele',
+                style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+              ),
+              contentPadding: const EdgeInsets.only(top: 10.0, left: 16.0, right: 16.0, bottom: 0),
               content: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.only(bottom: 16.0), // Add padding at the bottom
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Ev', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildFilterChips(
-                        houses, 
-                        selectedHouses, 
-                        (value) => setState(() => selectedHouses = value)
+                      _buildFilterSection(
+                        title: 'Ev',
+                        options: houses,
+                        selectedOptions: selectedHouses,
+                        onChanged: (value) => setState(() => selectedHouses = value),
+                        accentColor: accentColor,
+                        primaryTextColor: primaryTextColor,
+                        backgroundColor: dialogBackgroundColor,
                       ),
-                      
-                      const Divider(),
-                      const Text('Tür', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildFilterChips(
-                        species, 
-                        selectedSpecies, 
-                        (value) => setState(() => selectedSpecies = value)
+                      const Divider(color: Colors.white24),
+                      _buildFilterSection(
+                        title: 'Tür',
+                        options: species,
+                        selectedOptions: selectedSpecies,
+                        onChanged: (value) => setState(() => selectedSpecies = value),
+                        accentColor: accentColor,
+                        primaryTextColor: primaryTextColor,
+                        backgroundColor: dialogBackgroundColor,
                       ),
-                      
-                      const Divider(),
-                      const Text('Cinsiyet', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildFilterChips(
-                        genders, 
-                        selectedGenders, 
-                        (value) => setState(() => selectedGenders = value)
+                      const Divider(color: Colors.white24),
+                      _buildFilterSection(
+                        title: 'Cinsiyet',
+                        options: genders,
+                        selectedOptions: selectedGenders,
+                        onChanged: (value) => setState(() => selectedGenders = value),
+                        accentColor: accentColor,
+                        primaryTextColor: primaryTextColor,
+                        backgroundColor: dialogBackgroundColor,
                       ),
-                      
-                      const Divider(),
-                      const Text('Soy', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildFilterChips(
-                        ancestries, 
-                        selectedAncestries, 
-                        (value) => setState(() => selectedAncestries = value)
+                      const Divider(color: Colors.white24),
+                      _buildFilterSection(
+                        title: 'Soy',
+                        options: ancestries,
+                        selectedOptions: selectedAncestries,
+                        onChanged: (value) => setState(() => selectedAncestries = value),
+                        accentColor: accentColor,
+                        primaryTextColor: primaryTextColor,
+                        backgroundColor: dialogBackgroundColor,
                       ),
                     ],
                   ),
                 ),
               ),
+              actionsPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               actions: [
                 TextButton(
+                  style: TextButton.styleFrom(foregroundColor: secondaryTextColor),
                   onPressed: () {
                     Navigator.of(context).pop();
                     this.setState(() { // Use this.setState as we are in _CharactersScreenState
@@ -277,6 +295,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                   child: const Text('Iptal'),
                 ),
                 TextButton(
+                  style: TextButton.styleFrom(foregroundColor: secondaryTextColor),
                   onPressed: () {
                     // Filtreleri temizle
                     _clearFilters(); // _clearFilters will reset the provider
@@ -288,6 +307,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                   child: const Text('Temizle'),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accentColor, // Altın rengi arkaplan
+                    foregroundColor: AppTheme.gryffindorPrimary, // Kırmızı metin
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                  ),
                   onPressed: () {
                     // Filtreleri uygula
                     ref.read(characterFiltersProvider.notifier).state = CharacterFilters(
@@ -319,23 +343,66 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
     });
   }
 
+  // Helper widget for filter sections to avoid repetition
+  Widget _buildFilterSection({
+    required String title,
+    required Set<String> options,
+    required Set<String> selectedOptions,
+    required Function(Set<String>) onChanged,
+    required Color accentColor,
+    required Color primaryTextColor,
+    required Color backgroundColor,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0), 
+          child: Text(
+            title, 
+            style: TextStyle(fontWeight: FontWeight.bold, color: accentColor, fontSize: 16)
+          ),
+        ),
+        _buildFilterChips(
+          options,
+          selectedOptions,
+          onChanged,
+          accentColor,
+          primaryTextColor,
+          backgroundColor,
+        ),
+      ],
+    );
+  }
+
   // Çoklu seçim filtreleri için chip'ler
-  Widget _buildFilterChips(Set<String> options, Set<String> selectedOptions, Function(Set<String>) onChanged) {
+  Widget _buildFilterChips(
+    Set<String> options, 
+    Set<String> selectedOptions, 
+    Function(Set<String>) onChanged,
+    Color accentColor,      // Added theme colors
+    Color primaryTextColor, // Added theme colors
+    Color backgroundColor,  // Added theme colors
+  ) {
     // Ensure options are not empty before creating chips
     if (options.isEmpty) {
-        return const Text('Filtre seçeneği bulunamadı.', style: TextStyle(fontStyle: FontStyle.italic));
+        return const Text(
+          'Filtre seçeneği bulunamadı.', 
+          style: TextStyle(fontStyle: FontStyle.italic, color: Colors.white54)
+        );
     }
     return Wrap(
       spacing: 8,
       runSpacing: 4,
       children: options.map((option) {
-        final capitalizedOption = option.isNotEmpty 
-            ? option.substring(0, 1).toUpperCase() + option.substring(1) 
+        final capitalizedOption = option.isNotEmpty
+            ? option.substring(0, 1).toUpperCase() + option.substring(1)
             : option;
-            
+        final isSelected = selectedOptions.contains(option);
+
         return FilterChip(
           label: Text(capitalizedOption),
-          selected: selectedOptions.contains(option),
+          selected: isSelected,
           onSelected: (selected) {
             final newSelection = Set<String>.from(selectedOptions);
             if (selected) {
@@ -345,6 +412,14 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
             }
             onChanged(newSelection);
           },
+          backgroundColor: backgroundColor.withOpacity(0.5), // Hafif arkaplan
+          labelStyle: TextStyle(
+            color: isSelected ? primaryTextColor : primaryTextColor, // Seçili ise Beyaz, değilse de Beyaz (arkaplan değişiyor)
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+          selectedColor: accentColor, // Seçili arkaplan altın rengi
+          checkmarkColor: primaryTextColor, // Checkmark rengi Beyaz
+          shape: StadiumBorder(side: BorderSide(color: isSelected ? accentColor : Colors.white30)),
         );
       }).toList(),
     );
@@ -449,7 +524,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
             // Aktif filtreler varsa, temizleme butonu
             if (filters.hasFilters())
               IconButton(
-                icon: const Icon(Icons.clear_all),
+                icon: const Icon(Icons.close),
                 onPressed: _clearFilters,
                 tooltip: 'Filtreleri Temizle',
               ),
