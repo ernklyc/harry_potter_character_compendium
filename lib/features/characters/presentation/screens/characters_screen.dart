@@ -17,9 +17,6 @@ final characterFiltersProvider = StateProvider<CharacterFilters>((ref) {
 class CharacterFilters {
   final String searchQuery;
   final Set<String> houses;
-  final bool? isStudent;
-  final bool? isStaff;
-  final bool? isWizard;
   final Set<String> species;
   final Set<String> genders;
   final Set<String> ancestries;
@@ -27,9 +24,6 @@ class CharacterFilters {
   CharacterFilters({
     this.searchQuery = '',
     this.houses = const {},
-    this.isStudent,
-    this.isStaff,
-    this.isWizard,
     this.species = const {},
     this.genders = const {},
     this.ancestries = const {},
@@ -38,9 +32,6 @@ class CharacterFilters {
   CharacterFilters copyWith({
     String? searchQuery,
     Set<String>? houses,
-    bool? isStudent,
-    bool? isStaff,
-    bool? isWizard,
     Set<String>? species,
     Set<String>? genders,
     Set<String>? ancestries,
@@ -48,9 +39,6 @@ class CharacterFilters {
     return CharacterFilters(
       searchQuery: searchQuery ?? this.searchQuery,
       houses: houses ?? this.houses,
-      isStudent: isStudent ?? this.isStudent,
-      isStaff: isStaff ?? this.isStaff,
-      isWizard: isWizard ?? this.isWizard,
       species: species ?? this.species,
       genders: genders ?? this.genders,
       ancestries: ancestries ?? this.ancestries,
@@ -58,66 +46,58 @@ class CharacterFilters {
   }
 
   bool hasFilters() {
-    return searchQuery.isNotEmpty || 
-           houses.isNotEmpty || 
-           isStudent != null || 
-           isStaff != null || 
-           isWizard != null || 
-           species.isNotEmpty || 
-           genders.isNotEmpty || 
+    return searchQuery.isNotEmpty ||
+           houses.isNotEmpty ||
+           species.isNotEmpty ||
+           genders.isNotEmpty ||
            ancestries.isNotEmpty;
   }
 
   bool matchesCharacter(Character character) {
-    // Arama sorgusuna göre filtreleme
+    // Normalize search query once
+    final lowerCaseSearchQuery = searchQuery.toLowerCase();
+    
+    // 1. Search Query Filter
     if (searchQuery.isNotEmpty && 
-        !character.name.toLowerCase().contains(searchQuery.toLowerCase())) {
-      return false;
+        !character.name.toLowerCase().contains(lowerCaseSearchQuery)) {
+      // print('Character ${character.name} filtered out by SEARCH: ${searchQuery}'); // İsteğe bağlı arama logu
+      return false; // No match for search query
     }
     
-    // Eve göre filtreleme
-    if (houses.isNotEmpty && 
-        character.house.isNotEmpty && 
-        !houses.contains(character.house.toLowerCase())) {
-      return false;
+    // 2. House Filter
+    if (houses.isNotEmpty) {
+        if (character.house.isEmpty || !houses.contains(character.house.toLowerCase())) {
+            // print('Character ${character.name} filtered out by HOUSE: ${character.house} not in ${houses}'); // İsteğe bağlı ev logu
+            return false; // Character house doesn't match selected houses or is empty
+        }
     }
     
-    // Öğrenci durumuna göre filtreleme
-    if (isStudent != null && character.hogwartsStudent != isStudent) {
-      return false;
+    // 3. Species Filter
+    if (species.isNotEmpty) {
+        if (character.species.isEmpty || !species.contains(character.species.toLowerCase())) {
+           // print('Character ${character.name} filtered out by SPECIES: ${character.species} not in ${species}'); // İsteğe bağlı tür logu
+           return false; // Character species doesn't match or is empty
+        }
     }
     
-    // Personel durumuna göre filtreleme
-    if (isStaff != null && character.hogwartsStaff != isStaff) {
-      return false;
+    // 4. Gender Filter
+    if (genders.isNotEmpty) {
+        if (character.gender.isEmpty || !genders.contains(character.gender.toLowerCase())) {
+            // print('Character ${character.name} filtered out by GENDER: ${character.gender} not in ${genders}'); // İsteğe bağlı cinsiyet logu
+            return false; // Character gender doesn't match or is empty
+        }
     }
     
-    // Büyücü durumuna göre filtreleme
-    if (isWizard != null && character.wizard != isWizard) {
-      return false;
+    // 5. Ancestry Filter
+    if (ancestries.isNotEmpty) {
+        if (character.ancestry.isEmpty || !ancestries.contains(character.ancestry.toLowerCase())) {
+             // print('Character ${character.name} filtered out by ANCESTRY: ${character.ancestry} not in ${ancestries}'); // İsteğe bağlı soy logu
+             return false; // Character ancestry doesn't match or is empty
+        }
     }
     
-    // Türe göre filtreleme
-    if (species.isNotEmpty && 
-        character.species.isNotEmpty && 
-        !species.contains(character.species.toLowerCase())) {
-      return false;
-    }
-    
-    // Cinsiyete göre filtreleme
-    if (genders.isNotEmpty && 
-        character.gender.isNotEmpty && 
-        !genders.contains(character.gender.toLowerCase())) {
-      return false;
-    }
-    
-    // Soy durumuna göre filtreleme
-    if (ancestries.isNotEmpty && 
-        character.ancestry.isNotEmpty && 
-        !ancestries.contains(character.ancestry.toLowerCase())) {
-      return false;
-    }
-    
+    // If all active filters passed, the character is a match
+    // print('Character ${character.name} MATCHED ALL FILTERS'); // Eşleşti logu
     return true;
   }
 }
@@ -232,9 +212,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
     Set<String> selectedSpecies = Set.from(currentFilters.species);
     Set<String> selectedGenders = Set.from(currentFilters.genders);
     Set<String> selectedAncestries = Set.from(currentFilters.ancestries);
-    bool? isStudent = currentFilters.isStudent;
-    bool? isStaff = currentFilters.isStaff;
-    bool? isWizard = currentFilters.isWizard;
     
     showDialog(
       context: context,
@@ -251,25 +228,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Durum', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildTriStateFilter(
-                        'Ögrenci', 
-                        isStudent, 
-                        (value) => setState(() => isStudent = value)
-                      ),
-                      _buildTriStateFilter(
-                        'Personel', 
-                        isStaff, 
-                        (value) => setState(() => isStaff = value)
-                      ),
-                      _buildTriStateFilter(
-                        'Büyücü', 
-                        isWizard, 
-                        (value) => setState(() => isWizard = value)
-                      ),
-                      
-                      const Divider(),
                       const Text('Ev', style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       _buildFilterChips(
@@ -312,7 +270,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    setState(() {
+                    this.setState(() { // Use this.setState as we are in _CharactersScreenState
                       _showFilterDialog = false; // Filtreleme diyaloğu kapandı
                     });
                   },
@@ -321,9 +279,9 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 TextButton(
                   onPressed: () {
                     // Filtreleri temizle
-                    _clearFilters();
+                    _clearFilters(); // _clearFilters will reset the provider
                     Navigator.of(context).pop();
-                    setState(() {
+                    this.setState(() { // Use this.setState
                       _showFilterDialog = false; // Filtreleme diyaloğu kapandı
                     });
                   },
@@ -333,17 +291,14 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                   onPressed: () {
                     // Filtreleri uygula
                     ref.read(characterFiltersProvider.notifier).state = CharacterFilters(
-                      searchQuery: currentFilters.searchQuery,
+                      searchQuery: currentFilters.searchQuery, // Keep existing search query
                       houses: selectedHouses,
-                      isStudent: isStudent,
-                      isStaff: isStaff,
-                      isWizard: isWizard,
                       species: selectedSpecies,
                       genders: selectedGenders,
                       ancestries: selectedAncestries,
                     );
                     Navigator.of(context).pop();
-                    this.setState(() {
+                    this.setState(() { // Use this.setState
                       _showFilterDialog = false; // Filtreleme diyaloğu kapandı
                     });
                   },
@@ -355,40 +310,21 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
         );
       },
     ).then((_) {
-      // Dialog kapatıldığında _showFilterDialog'u false yap
-      setState(() {
-        _showFilterDialog = false;
-      });
+      // Dialog kapatıldığında _showFilterDialog'u false yap (widget hala mounted ise)
+      if (mounted) {
+          setState(() {
+            _showFilterDialog = false;
+          });
+      }
     });
-  }
-
-  // Üç durumlu filtre (evet/hayır/önemsiz)
-  Widget _buildTriStateFilter(String label, bool? value, Function(bool?) onChanged) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(label),
-        ),
-        Switch(
-          value: value ?? false,
-          onChanged: (newValue) {
-            if (value == null) {
-              onChanged(true);
-            } else if (value == true) {
-              onChanged(false);
-            } else {
-              onChanged(null);
-            }
-          },
-        ),
-        SizedBox(width: 8),
-        Text(value == null ? 'Fark Etmez' : (value ? 'Evet' : 'Hayır')),
-      ],
-    );
   }
 
   // Çoklu seçim filtreleri için chip'ler
   Widget _buildFilterChips(Set<String> options, Set<String> selectedOptions, Function(Set<String>) onChanged) {
+    // Ensure options are not empty before creating chips
+    if (options.isEmpty) {
+        return const Text('Filtre seçeneği bulunamadı.', style: TextStyle(fontStyle: FontStyle.italic));
+    }
     return Wrap(
       spacing: 8,
       runSpacing: 4,
