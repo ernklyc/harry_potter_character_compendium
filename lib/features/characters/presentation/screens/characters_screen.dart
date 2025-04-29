@@ -492,16 +492,25 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 ),
           actions: [
             // Arama butonu
-            IconButton(
-              icon: Icon(_showSearchBar ? Icons.clear : Icons.search),
-              onPressed: () {
-                setState(() {
-                  _showSearchBar = !_showSearchBar;
-                  if (!_showSearchBar) {
-                    _searchController.clear();
-                  }
-                });
-              },
+            Container(
+              decoration: BoxDecoration(
+                color: _showSearchBar
+                    ? Colors.white.withOpacity(0.15) // Arama aktifken beyaz arkaplan
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: IconButton(
+                // İkon rengi arama durumuna göre değişiyor
+                icon: Icon(_showSearchBar ? Icons.clear : Icons.search, color: _showSearchBar ? AppTheme.goldAccent : Colors.white),
+                onPressed: () {
+                  setState(() {
+                    _showSearchBar = !_showSearchBar;
+                    if (!_showSearchBar) {
+                      _searchController.clear();
+                    }
+                  });
+                },
+              ),
             ),
             // Filtreleme butonu
             Container(

@@ -56,6 +56,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_animate: ^4.5.2
   shimmer: ^3.0.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

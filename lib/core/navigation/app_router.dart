@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/screens/character_detail_screen.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/screens/characters_screen.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/screens/spells_screen.dart';
+import 'package:harry_potter_character_compendium/features/favorites/presentation/screens/profile_screen.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -41,6 +42,15 @@ class AppRouter {
               GoRoute(
                 path: '/spells',
                 builder: (context, state) => const SpellsScreen(),
+              ),
+            ],
+          ),
+          // Profil sekmesi
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),
@@ -91,6 +101,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
             selectedIcon: Icon(Icons.auto_fix_high, color: AppTheme.goldAccent),
             label: 'Büyüler',
             tooltip: 'Büyüleri Görüntüle',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person, color: Colors.white),
+            selectedIcon: Icon(Icons.person, color: AppTheme.goldAccent),
+            label: 'Profil',
+            tooltip: 'Profili Görüntüle',
           ),
         ],
         surfaceTintColor: Colors.transparent,

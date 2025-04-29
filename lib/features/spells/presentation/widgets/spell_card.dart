@@ -1,81 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:harry_potter_character_compendium/features/spells/data/models/spell_model.dart';
+import 'package:harry_potter_character_compendium/features/favorites/domain/providers/favorite_providers.dart'; // Favori provider import
 
-// StatelessWidget'a geri dönüldü, ExpansionTile state'i yönetecek
-class SpellCard extends StatelessWidget {
+// SpellCard artık ConsumerWidget olacak
+class SpellCard extends ConsumerWidget { 
   final Spell spell;
 
   const SpellCard({super.key, required this.spell});
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleStyle = GoogleFonts.cinzelDecorative(
-      fontSize: 17,
-      fontWeight: FontWeight.bold,
-      color: isDark ? AppTheme.goldAccent : AppTheme.gryffindorRed,
-    );
-    final descriptionStyle = GoogleFonts.lato(
-      fontSize: 14,
-      color: colors.onSurface.withOpacity(0.7),
-    );
+  // build metodu WidgetRef alacak
+  Widget build(BuildContext context, WidgetRef ref) { 
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color cardColor = isDark ? Colors.grey[850]! : Colors.white;
+    final Color accentColor = AppTheme.goldAccent; // Temadan altın rengini alalım
+
+    // Favori durumunu izle
+    final favoriteSpellIds = ref.watch(favoriteSpellsProvider); 
+    final isFavorite = favoriteSpellIds.contains(spell.id);
 
     return Card(
-      elevation: 2, // ExpansionTile kendi gölgesini yönetebilir
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: Colors.grey.withOpacity(isDark ? 0.3 : 0.2), width: 1),
       ),
-      clipBehavior: Clip.antiAlias, // Önemli: ExpansionTile içeriği kırpılmalı
-      child: ExpansionTile(
-        // Görünüm Özelleştirmeleri
-        tilePadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        backgroundColor: Theme.of(context).cardTheme.color, // Kart rengiyle aynı
-        collapsedBackgroundColor: Theme.of(context).cardTheme.color,
-        iconColor: colors.onSurface.withOpacity(0.6),
-        collapsedIconColor: colors.onSurface.withOpacity(0.5),
-        textColor: titleStyle.color, // Başlık rengi açıkken de aynı
-        collapsedTextColor: titleStyle.color,
-        shape: const Border(), // İç kenarlıkları kaldır
-        collapsedShape: const Border(), // İç kenarlıkları kaldır
-
-        // Başlık Kısmı (Kapalıyken Görünen)
-        title: Row(
-          children: [
-            Icon(Icons.auto_fix_high, color: AppTheme.goldAccent, size: 28),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(spell.name, style: titleStyle),
-            ),
-          ],
-        ),
-        // Genişletme İkonu Sağda
-        trailing: const Icon(Icons.expand_more), // Varsayılan ikon, tile çevirecek
-        // childrenPadding: EdgeInsets.zero, // İsteğe bağlı padding
-        // expandedAlignment: Alignment.centerLeft, // İçerik hizalaması
-        // expandedCrossAxisAlignment: CrossAxisAlignment.start,
-
-        // Açılınca Görünen Çocuklar (Açıklama)
+      color: cardColor,
+      child: Stack( // Stack widget'ı favori butonu için eklendi
         children: [
-          if (spell.description.isNotEmpty)
-            Padding(
-              // Padding'i biraz daha basit tutalım, sola yaslama için
-              padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-              child: Align(
-                 alignment: Alignment.centerLeft, // İçeriği sola hizala
-                 child: Text(
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  spell.name,
+                  style: GoogleFonts.cinzelDecorative( // Tematik font
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor, // Başlık için altın rengi
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
                   spell.description,
-                  style: descriptionStyle,
-                  textAlign: TextAlign.start, // Metni sola yasla
-                 ),
+                  style: GoogleFonts.lato(
+                    fontSize: 14,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                    height: 1.4, // Satır yüksekliği
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Favori Butonu (Sağ Üst Köşe - farklı bir konum)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Material(
+              color: Colors.transparent, // Veya hafif bir arkaplan: cardColor.withOpacity(0.5)
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () {
+                  // Favori durumunu değiştir
+                  ref.read(favoriteSpellsProvider.notifier).toggleFavorite(spell.id);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0), // Padding ayarlandı
+                  child: Icon(
+                    isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                    color: isFavorite ? accentColor : (isDark ? Colors.white60 : Colors.black45),
+                    size: 22, // Boyut ayarlandı
+                    shadows: isFavorite ? [Shadow(blurRadius: 3.0, color: accentColor.withOpacity(0.5))] : null,
+                  ),
+                ),
               ),
             ),
+          ),
         ],
-        // onExpansionChanged: (bool expanding) => print('${spell.name} expanded: $expanding'),
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms); // Animasyon kalabilir
   }
 } 
