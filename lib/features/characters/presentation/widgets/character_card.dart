@@ -7,11 +7,13 @@ import 'package:harry_potter_character_compendium/features/characters/data/model
 class CharacterCard extends StatelessWidget {
   final Character character;
   final VoidCallback onTap;
+  final bool isListView;
 
   const CharacterCard({
     super.key,
     required this.character,
     required this.onTap,
+    this.isListView = false,
   });
 
   Color _getHouseColor(String house) {
@@ -40,6 +42,92 @@ class CharacterCard extends StatelessWidget {
     final houseAccentColor = _getHouseAccentColor(character.house);
     final cardBackgroundColor = Theme.of(context).cardTheme.color ?? Colors.white;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (isListView) {
+      return Card(
+        clipBehavior: Clip.antiAlias,
+        elevation: 2,
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: houseColor,
+            width: 1.5,
+          ),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          child: Row(
+            children: [
+              Hero(
+                tag: 'character_image_${character.id}',
+                child: SizedBox(
+                  width: 80,
+                  height: 100,
+                  child: character.image != null && character.image!.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: character.image!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(color: Colors.grey[300]),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey[300],
+                          child: Icon(Icons.person, size: 30, color: Colors.grey[600]),
+                        ),
+                      )
+                    : Container(
+                        color: Colors.grey[300],
+                        child: Icon(Icons.person, size: 30, color: Colors.grey[600]),
+                      ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        character.name,
+                        style: GoogleFonts.cinzelDecorative(
+                          color: houseColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (character.house.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          character.house,
+                          style: GoogleFonts.lato(
+                            color: houseAccentColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        children: [
+                          if (character.hogwartsStudent)
+                            _buildListInfoChip('Öğrenci', Icons.school, houseColor, isDark),
+                          if (character.hogwartsStaff)
+                            _buildListInfoChip('Personel', Icons.work, houseColor, isDark),
+                          if (character.wizard && !character.hogwartsStudent && !character.hogwartsStaff)
+                            _buildListInfoChip('Büyücü', Icons.star, houseColor, isDark),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -87,8 +175,8 @@ class CharacterCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.8),
-                        Colors.black.withOpacity(0.0),
+                        houseColor.withOpacity(0.9),
+                        houseColor.withOpacity(0.0),
                       ],
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
@@ -136,7 +224,7 @@ class CharacterCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (character.hogwartsStudent)
-                      _buildInfoChip('Ögrenci', Icons.school, houseColor, isDark),
+                      _buildInfoChip('Öğrenci', Icons.school, houseColor, isDark),
                     if (character.hogwartsStaff)
                       _buildInfoChip('Personel', Icons.work, houseColor, isDark),
                     if (character.wizard && !character.hogwartsStudent && !character.hogwartsStaff)
@@ -180,6 +268,38 @@ class CharacterCard extends StatelessWidget {
             label,
             style: GoogleFonts.lato(
               fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListInfoChip(String label, IconData icon, Color bgColor, bool isDark) {
+    final chipColor = isDark ? bgColor.withOpacity(0.2) : bgColor.withOpacity(0.15);
+    final textColor = isDark ? Colors.white.withOpacity(0.9) : bgColor;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: chipColor,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: bgColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: textColor),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: GoogleFonts.lato(
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),
