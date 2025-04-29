@@ -10,13 +10,37 @@ import 'package:harry_potter_character_compendium/features/characters/domain/pro
 import 'package:harry_potter_character_compendium/features/characters/data/models/character_model.dart';
 import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
-class CharacterDetailScreen extends ConsumerWidget {
+class CharacterDetailScreen extends ConsumerStatefulWidget {
   final String characterId;
 
   const CharacterDetailScreen({
     super.key,
     required this.characterId,
   });
+
+  @override
+  _CharacterDetailScreenState createState() => _CharacterDetailScreenState();
+}
+
+class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    AppStrings.addListener(_onLanguageChanged);
+  }
+
+  @override
+  void dispose() {
+    AppStrings.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  void _onLanguageChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   // Bu fonksiyonlar artık doğrudan AppTheme'den alınabilir veya burada kalabilir
   Color _getHouseColor(String house) {
@@ -40,12 +64,14 @@ class CharacterDetailScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final characterDetailAsync = ref.watch(characterDetailProvider(characterId));
+  Widget build(BuildContext context) {
+    final currentLanguage = ref.watch(currentLanguageProvider);
+    final characterDetailAsync = ref.watch(characterDetailProvider(widget.characterId));
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
+      key: ValueKey(currentLanguage),
       backgroundColor: theme.colorScheme.background,
       body: characterDetailAsync.when(
         data: (character) {
@@ -162,7 +188,7 @@ class CharacterDetailScreen extends ConsumerWidget {
                         [
                           if (character.wand!.wood.isNotEmpty) _buildInfoRow(context, Icons.park_outlined, AppStrings.characterWandWood, character.wand!.wood, accentColor),
                           if (character.wand!.core.isNotEmpty) _buildInfoRow(context, Icons.flash_on_outlined, AppStrings.characterWandCore, character.wand!.core, accentColor),
-                          if (character.wand!.length != null) _buildInfoRow(context, Icons.straighten_outlined, AppStrings.characterWandLength, '${character.wand!.length} inç', accentColor),
+                          if (character.wand!.length != null) _buildInfoRow(context, Icons.straighten_outlined, AppStrings.characterWandLength, '${character.wand!.length} ${AppStrings.inchUnit}', accentColor),
                         ],
                       ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
 
@@ -223,7 +249,7 @@ class CharacterDetailScreen extends ConsumerWidget {
         ),
         error: (err, stack) => ErrorDisplay(
           message: AppStrings.characterLoadingError,
-          onRetry: () => ref.invalidate(characterDetailProvider(characterId)),
+          onRetry: () => ref.invalidate(characterDetailProvider(widget.characterId)),
         ),
       ),
     );

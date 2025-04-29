@@ -1,3 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Mevcut dil kodunu tutan StateProvider
+final currentLanguageProvider = StateProvider<String>((ref) => AppStrings.getCurrentLanguage());
+
 // Uygulama genelinde kullanılan sabit metinler.
 class AppStrings {
   // Aktif dil - varsayılan olarak Türkçe (tr)
@@ -130,4 +135,5 @@ class AppStrings {
   static String get noStaffFound => _currentLanguage == 'tr' ? 'Personel bulunamadı' : 'No staff found';
   static String get tryAgain => _currentLanguage == 'tr' ? 'Tekrar Dene' : 'Try Again';
   static String get somethingWentWrong => _currentLanguage == 'tr' ? 'Bir şeyler yanlış gitti' : 'Something went wrong';
+  static String get inchUnit => _currentLanguage == 'tr' ? 'inç' : 'inch';
 } 

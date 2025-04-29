@@ -116,25 +116,12 @@ class CharactersScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 3);
     final searchController = useTextEditingController();
     final showSearchBar = useState(false);
-    final currentTitle = useState(AppStrings.charactersTabAll);
     
     final List<String> tabTitles = [
       AppStrings.charactersTabAll, 
       AppStrings.charactersTabStudents, 
       AppStrings.charactersTabStaff
     ];
-    
-    // TabController listener için useEffect
-    useEffect(() {
-      void handleTabSelection() {
-        if (!tabController.indexIsChanging) {
-          currentTitle.value = tabTitles[tabController.index];
-        }
-      }
-      
-      tabController.addListener(handleTabSelection);
-      return () => tabController.removeListener(handleTabSelection);
-    }, [tabController]);
     
     // useEffect ile arama değişimini izlemek için useEffect
     useEffect(() {
@@ -436,19 +423,20 @@ class CharactersScreen extends HookConsumerWidget {
                   ),
                   onPressed: () {
                     // Dil değiştirme
-                    AppStrings.setLanguage(
-                      AppStrings.getCurrentLanguage() == 'tr' ? 'en' : 'tr'
-                    );
-                    // State'i yenile
+                    final newLang = AppStrings.getCurrentLanguage() == 'tr' ? 'en' : 'tr';
+                    AppStrings.setLanguage(newLang);
+                    ref.read(currentLanguageProvider.notifier).state = newLang; // Provider'ı güncelle
+
+                    // State'i yenile (Bu kısımlar belki gereksiz olabilir, provider izleniyorsa)
                     ref.invalidate(allCharactersProvider);
                     ref.invalidate(hogwartsStudentsProvider);
                     ref.invalidate(hogwartsStaffProvider);
                     
-                    // Başlığı güncelle
-                    currentTitle.value = tabTitles[tabController.index];
+                    // Eğer tab başlıkları AppStrings kullanıyorsa zaten güncellenir.
+                    // currentTitle.value = tabTitles[tabController.index]; // KALDIRILDI
                     
-                    // Ekranı yeniden çiz
-                    (context as Element).markNeedsBuild();
+                    // Ekranı yeniden çiz (Provider izleniyorsa bu da gereksiz olabilir)
+                    // (context as Element).markNeedsBuild(); 
                   },
                   tooltip: AppStrings.getCurrentLanguage() == 'tr' 
                       ? 'Switch to English' 
@@ -466,7 +454,7 @@ class CharactersScreen extends HookConsumerWidget {
                   hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
                 ),
               )
-            : Text(currentTitle.value),
+            : Text(tabTitles[tabController.index]), // Başlığı dinamik olarak al
           actions: [
             // Arama butonu
           Container(
