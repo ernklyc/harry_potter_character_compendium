@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dart';
 import 'package:harry_potter_character_compendium/core/widgets/error_display.dart';
 import 'package:harry_potter_character_compendium/features/spells/domain/providers/spells_providers.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_card.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list_shimmer.dart';
 import 'package:harry_potter_character_compendium/features/spells/data/models/spell_model.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
 // Büyü filtreleme durumunu yönetmek için state provider
 final spellFiltersProvider = StateProvider<SpellFilters>((ref) {
@@ -93,6 +95,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
   Widget build(BuildContext context) {
     final allSpellsAsync = ref.watch(allSpellsProvider);
     final filters = ref.watch(spellFiltersProvider);
+    final theme = Theme.of(context);
 
     // Arama ve filtrelemeye göre büyüleri filtrele
     List<Spell> _filterSpells(List<Spell> spells) {
@@ -104,7 +107,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
       appBar: AppBar(
         leading: _showSearchBar 
             ? IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back, size: AppDimensions.iconSizeLarge),
                 onPressed: () {
                   setState(() {
                     _showSearchBar = false;
@@ -117,27 +120,23 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
         title: _showSearchBar 
             ? TextField(
                 controller: _searchController,
+                style: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white),
+                autofocus: true,
+                cursorColor: AppTheme.goldAccent,
                 decoration: InputDecoration(
-                  hintText: 'Büyü Ara...',
+                  hintText: AppStrings.spellsSearchHint,
                   border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.white70),
+                  hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
                   suffixIcon: _searchController.text.isNotEmpty 
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.white70, size: 20),
+                          icon: Icon(Icons.clear, color: theme.colorScheme.onPrimary.withOpacity(0.7), size: AppDimensions.iconSizeMedium),
                           onPressed: () => _searchController.clear(),
                         ) 
                       : null,
                 ),
-                style: const TextStyle(color: Colors.white),
-                autofocus: true,
-                cursorColor: AppTheme.goldAccent,
               )
             : Text(
-                'Büyüler',
-                style: GoogleFonts.cinzelDecorative(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                AppStrings.spellsTitle,
               ),
         actions: [
           // Arama butonu
@@ -146,12 +145,13 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
               color: _showSearchBar
                   ? Colors.white.withOpacity(0.15) // Arama aktifken beyaz arkaplan
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
             ),
             child: IconButton(
               icon: Icon(
                 _showSearchBar ? Icons.clear : Icons.search,
-                color: _showSearchBar ? AppTheme.goldAccent : Colors.white,
+                color: _showSearchBar ? AppTheme.goldAccent : theme.colorScheme.onPrimary,
+                size: AppDimensions.iconSizeLarge,
               ),
               onPressed: () {
                 setState(() {
@@ -166,37 +166,26 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
           // Aktif filtreler varsa, temizleme butonu
           if (filters.hasFilters())
             Container(
-              margin: const EdgeInsets.only(right: 8),
+              margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
               decoration: BoxDecoration(
                 color: AppTheme.goldAccent.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
                 border: Border.all(
                   color: AppTheme.goldAccent.withOpacity(0.5),
                   width: 1,
                 ),
               ),
               child: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.clear_all,
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
+                  size: AppDimensions.iconSizeLarge,
                 ),
                 onPressed: _clearFilters,
-                tooltip: 'Filtreleri Temizle',
+                tooltip: AppStrings.spellsClearFilters,
               ),
             ),
         ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppTheme.gryffindorPrimary.withOpacity(0.9),
-                AppTheme.gryffindorPrimary,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
       ),
       body: allSpellsAsync.when(
         data: (spells) {
@@ -207,40 +196,36 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
               onRefresh: () => ref.refresh(allSpellsProvider.future),
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: AppDimensions.pagePadding.copyWith(top: 0, bottom: 0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.auto_fix_off,
-                        size: 64,
+                        size: AppDimensions.iconSizeExtraLarge * 2,
                         color: AppTheme.goldAccent.withOpacity(0.6),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppDimensions.paddingLarge),
                       Text(
-                        filters.hasFilters() 
-                            ? 'Arama kriterlerinize uygun büyü bulunamadı.' 
-                            : 'Gösterilecek büyü bulunamadı.',
+                        filters.hasFilters()
+                            ? AppStrings.spellsSearchNotFound
+                            : AppStrings.spellsNotFound,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.cinzelDecorative(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
-                        ),
+                        style: AppTextStyles.emptyListText(context),
                       ),
                       if (filters.hasFilters()) ...[
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppDimensions.paddingMedium),
                         ElevatedButton.icon(
                           onPressed: _clearFilters,
-                          icon: const Icon(Icons.clear_all),
-                          label: const Text('Filtreleri Temizle'),
+                          icon: const Icon(Icons.clear_all, size: AppDimensions.iconSizeMedium),
+                          label: const Text(AppStrings.spellsClearFilters),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.gryffindorPrimary,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge, vertical: AppDimensions.paddingSmall),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                              side: const BorderSide(
                                 color: AppTheme.goldAccent,
                                 width: 1,
                               ),
@@ -260,7 +245,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
             color: AppTheme.goldAccent,
             backgroundColor: AppTheme.gryffindorPrimary,
             child: ListView.builder(
-              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              padding: const EdgeInsets.only(top: AppDimensions.paddingMedium, bottom: AppDimensions.paddingMedium),
               itemCount: filteredSpells.length,
               itemBuilder: (context, index) {
                 final spell = filteredSpells[index];
@@ -278,7 +263,7 @@ class _SpellsScreenState extends ConsumerState<SpellsScreen> {
           color: AppTheme.goldAccent,
           backgroundColor: AppTheme.gryffindorPrimary,
           child: ErrorDisplay(
-            message: 'Büyüler yüklenirken bir hata oluştu.',
+            message: AppStrings.spellsLoadingError,
             onRetry: () => ref.invalidate(allSpellsProvider),
           ),
         ),

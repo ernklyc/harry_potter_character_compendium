@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:harry_potter_character_compendium/features/characters/data/models/character_model.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/widgets/character_card.dart';
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
 class CharacterList extends StatelessWidget {
   final List<Character> characters;
@@ -17,7 +18,7 @@ class CharacterList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (characters.isEmpty) {
       return const Center(
-        child: Text('Bu kategoride karakter bulunamadı.'),
+        child: Text(AppStrings.characterNotFound),
       );
     }
 

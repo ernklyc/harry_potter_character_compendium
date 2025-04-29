@@ -180,4 +180,7 @@ class AppTheme {
   static const ravenclawSecondary = Color(0xFF946B2D);
   static const hufflepuffPrimary = Color(0xFFFFD800);
   static const hufflepuffSecondary = Color(0xFF000000);
+
+  // Ek Renkler
+  static const Color favoriteRed = Colors.redAccent; // Favori ikonu için
 } 

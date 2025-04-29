@@ -7,6 +7,9 @@ import 'package:harry_potter_character_compendium/features/characters/presentati
 import 'package:harry_potter_character_compendium/features/characters/presentation/widgets/character_list.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/widgets/character_list_shimmer.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; // Boyutlar import edildi
+import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dart'; // Metin stilleri import edildi
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart'; // AppStrings import edildi
 
 // Karakter filtreleme durumunu yönetmek için state provider
 final characterFiltersProvider = StateProvider<CharacterFilters>((ref) {
@@ -111,8 +114,12 @@ class CharactersScreen extends ConsumerStatefulWidget {
 
 class _CharactersScreenState extends ConsumerState<CharactersScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _currentTitle = "Karakterler"; // Başlangıç başlığı
-  final List<String> _tabTitles = const ["Tümü", "Ögrenciler", "Personel"]; 
+  String _currentTitle = AppStrings.charactersTitle; // Başlangıç başlığı AppStrings'ten
+  final List<String> _tabTitles = const [
+    AppStrings.charactersTabAll, 
+    AppStrings.charactersTabStudents, 
+    AppStrings.charactersTabStaff
+  ]; 
   final TextEditingController _searchController = TextEditingController();
   bool _showSearchBar = false;
   bool _showFilterDialog = false; // Filtreleme diyaloğunun açık olup olmadığını izler
@@ -223,76 +230,76 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
 
             return AlertDialog(
               backgroundColor: dialogBackgroundColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusExtraLarge)),
               title: Text(
-                'Karakterleri Filtrele',
-                style: TextStyle(color: accentColor, fontWeight: FontWeight.bold),
+                AppStrings.charactersFilterTitle,
+                style: AppTextStyles.sectionTitle.copyWith(color: accentColor, fontSize: 20),
               ),
-              contentPadding: const EdgeInsets.only(top: 10.0, left: 16.0, right: 16.0, bottom: 0),
+              contentPadding: const EdgeInsets.only(top: AppDimensions.paddingSmall, left: AppDimensions.paddingLarge, right: AppDimensions.paddingLarge, bottom: AppDimensions.paddingZero),
               content: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0), // Add padding at the bottom
+                  padding: const EdgeInsets.only(bottom: AppDimensions.paddingLarge),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildFilterSection(
-                        title: 'Ev',
+                        title: AppStrings.charactersFilterHouse,
                         options: houses,
                         selectedOptions: selectedHouses,
                         onChanged: (value) => setState(() => selectedHouses = value),
                         accentColor: accentColor,
-                        primaryTextColor: primaryTextColor,
+                        primaryTextColor: theme.colorScheme.onPrimary, 
                         backgroundColor: dialogBackgroundColor,
                       ),
-                      const Divider(color: Colors.white24),
+                      Divider(color: theme.colorScheme.onPrimary.withOpacity(0.24), thickness: AppDimensions.dividerThickness),
                       _buildFilterSection(
-                        title: 'Tür',
+                        title: AppStrings.charactersFilterSpecies,
                         options: species,
                         selectedOptions: selectedSpecies,
                         onChanged: (value) => setState(() => selectedSpecies = value),
                         accentColor: accentColor,
-                        primaryTextColor: primaryTextColor,
+                        primaryTextColor: theme.colorScheme.onPrimary,
                         backgroundColor: dialogBackgroundColor,
                       ),
-                      const Divider(color: Colors.white24),
+                      Divider(color: theme.colorScheme.onPrimary.withOpacity(0.24), thickness: AppDimensions.dividerThickness),
                       _buildFilterSection(
-                        title: 'Cinsiyet',
+                        title: AppStrings.charactersFilterGender,
                         options: genders,
                         selectedOptions: selectedGenders,
                         onChanged: (value) => setState(() => selectedGenders = value),
                         accentColor: accentColor,
-                        primaryTextColor: primaryTextColor,
+                        primaryTextColor: theme.colorScheme.onPrimary,
                         backgroundColor: dialogBackgroundColor,
                       ),
-                      const Divider(color: Colors.white24),
+                      Divider(color: theme.colorScheme.onPrimary.withOpacity(0.24), thickness: AppDimensions.dividerThickness),
                       _buildFilterSection(
-                        title: 'Soy',
+                        title: AppStrings.charactersFilterAncestry,
                         options: ancestries,
                         selectedOptions: selectedAncestries,
                         onChanged: (value) => setState(() => selectedAncestries = value),
                         accentColor: accentColor,
-                        primaryTextColor: primaryTextColor,
+                        primaryTextColor: theme.colorScheme.onPrimary,
                         backgroundColor: dialogBackgroundColor,
                       ),
                     ],
                   ),
                 ),
               ),
-              actionsPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              actionsPadding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge, vertical: AppDimensions.paddingMedium),
               actions: [
                 TextButton(
-                  style: TextButton.styleFrom(foregroundColor: secondaryTextColor),
+                  style: TextButton.styleFrom(foregroundColor: theme.colorScheme.onPrimary.withOpacity(0.7)),
                   onPressed: () {
                     Navigator.of(context).pop();
                     this.setState(() { // Use this.setState as we are in _CharactersScreenState
                       _showFilterDialog = false; // Filtreleme diyaloğu kapandı
                     });
                   },
-                  child: const Text('Iptal'),
+                  child: Text(AppStrings.cancel, style: AppTextStyles.button(context).copyWith(color: theme.colorScheme.onPrimary.withOpacity(0.7))),
                 ),
                 TextButton(
-                  style: TextButton.styleFrom(foregroundColor: secondaryTextColor),
+                  style: TextButton.styleFrom(foregroundColor: theme.colorScheme.onPrimary.withOpacity(0.7)),
                   onPressed: () {
                     // Filtreleri temizle
                     _clearFilters(); // _clearFilters will reset the provider
@@ -301,13 +308,13 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                       _showFilterDialog = false; // Filtreleme diyaloğu kapandı
                     });
                   },
-                  child: const Text('Temizle'),
+                  child: Text(AppStrings.clear, style: AppTextStyles.button(context).copyWith(color: theme.colorScheme.onPrimary.withOpacity(0.7))),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: accentColor, // Altın rengi arkaplan
                     foregroundColor: AppTheme.gryffindorPrimary, // Kırmızı metin
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusSmall)),
                   ),
                   onPressed: () {
                     // Filtreleri uygula
@@ -323,7 +330,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                       _showFilterDialog = false; // Filtreleme diyaloğu kapandı
                     });
                   },
-                  child: const Text('Uygula'),
+                  child: Text(AppStrings.apply, style: AppTextStyles.button(context).copyWith(color: AppTheme.gryffindorPrimary)),
                 ),
               ],
             );
@@ -354,10 +361,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0), 
+          padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingSmall),
           child: Text(
             title, 
-            style: TextStyle(fontWeight: FontWeight.bold, color: accentColor, fontSize: 16)
+            style: AppTextStyles.sectionTitle.copyWith(color: accentColor, fontSize: 16)
           ),
         ),
         _buildFilterChips(
@@ -383,14 +390,14 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
   ) {
     // Ensure options are not empty before creating chips
     if (options.isEmpty) {
-        return const Text(
-          'Filtre seçeneği bulunamadı.', 
-          style: TextStyle(fontStyle: FontStyle.italic, color: Colors.white54)
+        return Text(
+          AppStrings.filterOptionsNotFound,
+          style: AppTextStyles.bodySmall(context).copyWith(fontStyle: FontStyle.italic, color: Colors.white54)
         );
     }
     return Wrap(
-      spacing: 8,
-      runSpacing: 4,
+      spacing: AppDimensions.paddingSmall,
+      runSpacing: AppDimensions.paddingExtraSmall,
       children: options.map((option) {
         final capitalizedOption = option.isNotEmpty
             ? option.substring(0, 1).toUpperCase() + option.substring(1)
@@ -409,14 +416,12 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
             }
             onChanged(newSelection);
           },
+          padding: AppDimensions.chipPadding,
           backgroundColor: backgroundColor.withOpacity(0.5), // Hafif arkaplan
-          labelStyle: TextStyle(
-            color: isSelected ? primaryTextColor : primaryTextColor, // Seçili ise Beyaz, değilse de Beyaz (arkaplan değişiyor)
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
+          labelStyle: AppTextStyles.filterChip(context, isSelected),
           selectedColor: accentColor, // Seçili arkaplan altın rengi
           checkmarkColor: primaryTextColor, // Checkmark rengi Beyaz
-          shape: StadiumBorder(side: BorderSide(color: isSelected ? accentColor : Colors.white30)),
+          shape: StadiumBorder(side: BorderSide(color: isSelected ? accentColor : Colors.white30, width: 1.0)),
         );
       }).toList(),
     );
@@ -450,7 +455,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
         appBar: AppBar(
           leading: _showSearchBar 
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back, size: AppDimensions.iconSizeLarge),
                   onPressed: () {
                     setState(() {
                       _showSearchBar = false;
@@ -463,14 +468,14 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
           title: _showSearchBar 
               ? TextField(
                   controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: 'Karakter Ara...',
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.white70),
-                  ),
-                  style: const TextStyle(color: Colors.white),
+                  style: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white),
+                  cursorColor: AppTheme.goldAccent,
                   autofocus: true,
-                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                    hintText: AppStrings.charactersSearchHint,
+                    border: InputBorder.none,
+                    hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
+                  ),
                 )
               : AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
@@ -483,7 +488,6 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                   child: Text(
                     _currentTitle,
                     key: ValueKey<String>(_currentTitle),
-                    style: Theme.of(context).appBarTheme.titleTextStyle,
                   ),
                 ),
           actions: [
@@ -493,11 +497,11 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 color: _showSearchBar
                     ? Colors.white.withOpacity(0.15) // Arama aktifken beyaz arkaplan
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
               ),
               child: IconButton(
                 // İkon rengi arama durumuna göre değişiyor
-                icon: Icon(_showSearchBar ? Icons.clear : Icons.search, color: _showSearchBar ? AppTheme.goldAccent : Colors.white),
+                icon: Icon(_showSearchBar ? Icons.clear : Icons.search, color: _showSearchBar ? AppTheme.goldAccent : Colors.white, size: AppDimensions.iconSizeLarge),
                 onPressed: () {
                   setState(() {
                     _showSearchBar = !_showSearchBar;
@@ -514,10 +518,10 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
                 color: filters.hasFilters() || _showFilterDialog
                     ? Colors.white.withOpacity(0.15) // Aktif filtre varsa veya dialog açıksa beyaz arkaplan
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
               ),
               child: IconButton(
-                icon: const Icon(Icons.filter_list),
+                icon: const Icon(Icons.filter_list, size: AppDimensions.iconSizeLarge),
                 onPressed: () {
                   // API'den tüm karakterleri alma durumuna göre filtreleme diyalogunu göster
                   if (allCharacters.hasValue) {
@@ -529,9 +533,9 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
             // Aktif filtreler varsa, temizleme butonu
             if (filters.hasFilters())
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.close, size: AppDimensions.iconSizeLarge),
                 onPressed: _clearFilters,
-                tooltip: 'Filtreleri Temizle',
+                tooltip: AppStrings.charactersFilterClearTooltip,
               ),
           ],
           flexibleSpace: Container(
@@ -557,9 +561,9 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
               borderRadius: BorderRadius.circular(8.0),
             ),
             tabs: const [
-              Tab(icon: Icon(Icons.people_alt_outlined), text: 'Tümü'),
-              Tab(icon: Icon(Icons.school_outlined), text: 'Ögrenciler'),
-              Tab(icon: Icon(Icons.work_outline), text: 'Personel'),
+              Tab(icon: Icon(Icons.people_alt_outlined), text: AppStrings.charactersTabAll),
+              Tab(icon: Icon(Icons.school_outlined), text: AppStrings.charactersTabStudents),
+              Tab(icon: Icon(Icons.work_outline), text: AppStrings.charactersTabStaff),
             ],
           ),
         ),
@@ -581,7 +585,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
               error: (err, stack) => RefreshIndicator(
                 onRefresh: () => ref.refresh(allCharactersProvider.future),
                 child: ErrorDisplay(
-                  message: 'Karakterler yüklenemedi.',
+                  message: AppStrings.charactersLoadingError,
                   onRetry: () => _retryLoad(ref, 0),
                 ),
               ),
@@ -602,7 +606,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
               error: (err, stack) => RefreshIndicator(
                 onRefresh: () => ref.refresh(hogwartsStudentsProvider.future),
                 child: ErrorDisplay(
-                  message: 'Ögrenciler yüklenemedi.',
+                  message: AppStrings.studentsLoadingError,
                   onRetry: () => _retryLoad(ref, 1),
                 ),
               ),
@@ -623,7 +627,7 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
               error: (err, stack) => RefreshIndicator(
                 onRefresh: () => ref.refresh(hogwartsStaffProvider.future),
                 child: ErrorDisplay(
-                  message: 'Personel yüklenemedi.',
+                  message: AppStrings.staffLoadingError,
                   onRetry: () => _retryLoad(ref, 2),
                 ),
               ),

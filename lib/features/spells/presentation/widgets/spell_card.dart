@@ -3,6 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; // Boyutlar import edildi
+import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dart'; // Metin stilleri import edildi
 import 'package:harry_potter_character_compendium/features/spells/data/models/spell_model.dart';
 import 'package:harry_potter_character_compendium/features/favorites/domain/providers/favorite_providers.dart'; // Favori provider import
 
@@ -16,67 +18,62 @@ class SpellCard extends ConsumerWidget {
   // build metodu WidgetRef alacak
   Widget build(BuildContext context, WidgetRef ref) { 
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color cardColor = isDark ? Colors.grey[850]! : Colors.white;
-    final Color accentColor = AppTheme.goldAccent; // Temadan altın rengini alalım
+    final theme = Theme.of(context);
+    // Renkler tema veya AppTheme'den
+    final Color cardColor = Theme.of(context).cardTheme.color ?? (isDark ? Colors.grey[850]! : Colors.white);
+    final Color accentColor = AppTheme.goldAccent;
+    final Color defaultTextColor = Theme.of(context).textTheme.bodyMedium?.color ?? theme.colorScheme.onSurface.withOpacity(0.8);
 
     // Favori durumunu izle
     final favoriteSpellIds = ref.watch(favoriteSpellsProvider); 
     final isFavorite = favoriteSpellIds.contains(spell.id);
 
     return Card(
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Colors.grey.withOpacity(isDark ? 0.3 : 0.2), width: 1),
+      elevation: AppDimensions.cardElevation, // Sabit kullanıldı
+      margin: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall - 2),
+      shape: Theme.of(context).cardTheme.shape ?? RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+        side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3), width: 1),
       ),
       color: cardColor,
       child: Stack( // Stack widget'ı favori butonu için eklendi
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   spell.name,
-                  style: GoogleFonts.cinzelDecorative( // Tematik font
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: accentColor, // Başlık için altın rengi
-                  ),
+                  style: AppTextStyles.sectionTitle.copyWith(color: accentColor),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppDimensions.paddingSmall),
                 Text(
                   spell.description,
-                  style: GoogleFonts.lato(
-                    fontSize: 14,
-                    color: isDark ? Colors.white70 : Colors.black87,
-                    height: 1.4, // Satır yüksekliği
-                  ),
+                  style: AppTextStyles.bodyRegular(context).copyWith(color: defaultTextColor, height: 1.4),
                 ),
               ],
             ),
           ),
           // Favori Butonu (Sağ Üst Köşe - farklı bir konum)
           Positioned(
-            top: 8,
-            right: 8,
+            top: AppDimensions.paddingSmall,
+            right: AppDimensions.paddingSmall,
             child: Material(
-              color: Colors.transparent, // Veya hafif bir arkaplan: cardColor.withOpacity(0.5)
-              borderRadius: BorderRadius.circular(20),
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
               child: InkWell(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
                 onTap: () {
                   // Favori durumunu değiştir
                   ref.read(favoriteSpellsProvider.notifier).toggleFavorite(spell.id);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(5.0), // Padding ayarlandı
+                  padding: const EdgeInsets.all(AppDimensions.paddingSmall - 3),
                   child: Icon(
                     isFavorite ? Icons.bookmark : Icons.bookmark_border,
-                    color: isFavorite ? accentColor : (isDark ? Colors.white60 : Colors.black45),
-                    size: 22, // Boyut ayarlandı
+                    color: isFavorite ? accentColor : theme.colorScheme.onSurface.withOpacity(0.5),
+                    size: AppDimensions.iconSizeMedium,
                     shadows: isFavorite ? [Shadow(blurRadius: 3.0, color: accentColor.withOpacity(0.5))] : null,
                   ),
                 ),

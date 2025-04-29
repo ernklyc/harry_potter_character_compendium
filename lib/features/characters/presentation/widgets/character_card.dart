@@ -1,132 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dart';
 import 'package:harry_potter_character_compendium/features/characters/data/models/character_model.dart';
 import 'package:harry_potter_character_compendium/features/favorites/domain/providers/favorite_providers.dart';
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
 class CharacterCard extends ConsumerWidget {
   final Character character;
   final VoidCallback onTap;
-  final bool isListView;
 
   const CharacterCard({
     super.key,
     required this.character,
     required this.onTap,
-    this.isListView = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final houseColor = _getHouseColor(character.house);
     final houseAccentColor = _getHouseAccentColor(character.house);
-    final cardBackgroundColor = Theme.of(context).cardTheme.color ?? Colors.white;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final favoriteIds = ref.watch(favoriteCharactersProvider);
     final isFavorite = favoriteIds.contains(character.id);
 
-    if (isListView) {
-      return Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 2,
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: houseColor,
-            width: 1.5,
-          ),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          child: Row(
-            children: [
-              Hero(
-                tag: 'character_image_${character.id}',
-                child: SizedBox(
-                  width: 80,
-                  height: 100,
-                  child: character.image != null && character.image!.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: character.image!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[300]),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey[300],
-                          child: Icon(Icons.person, size: 30, color: Colors.grey[600]),
-                        ),
-                      )
-                    : Container(
-                        color: Colors.grey[300],
-                        child: Icon(Icons.person, size: 30, color: Colors.grey[600]),
-                      ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        character.name,
-                        style: GoogleFonts.cinzelDecorative(
-                          color: houseColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (character.house.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          character.house,
-                          style: GoogleFonts.lato(
-                            color: houseAccentColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        children: [
-                          if (character.hogwartsStudent)
-                            _buildListInfoChip('Öğrenci', Icons.school, houseColor, isDark),
-                          if (character.hogwartsStaff)
-                            _buildListInfoChip('Personel', Icons.work, houseColor, isDark),
-                          if (character.wizard && !character.hogwartsStudent && !character.hogwartsStaff)
-                            _buildListInfoChip('Büyücü', Icons.star, houseColor, isDark),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Card(
       clipBehavior: Clip.antiAlias,
-      elevation: 5,
+      elevation: AppDimensions.cardElevation,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         side: BorderSide(
           color: houseColor,
-          width: 2,
+          width: AppDimensions.cardBorderWidth + 0.5,
         ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         child: Stack(
           children: [
             Positioned.fill(
@@ -139,52 +52,53 @@ class CharacterCard extends ConsumerWidget {
                         placeholder: (context, url) => Container(color: Colors.grey[300]),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey[300],
-                          child: Icon(Icons.person, size: 60, color: Colors.grey[600]),
+                          child: Icon(Icons.person, size: AppDimensions.iconSizeExtraLarge * 2, color: Colors.grey[600]),
                         ),
                       )
                     : Container(
                         color: Colors.grey[300],
-                        child: Icon(Icons.person, size: 60, color: Colors.grey[600]),
+                        child: Icon(Icons.person, size: AppDimensions.iconSizeExtraLarge * 2, color: Colors.grey[600]),
                       ),
               ),
             ),
             Positioned(
-              top: 4,
-              left: 4,
+              top: AppDimensions.paddingExtraSmall,
+              left: AppDimensions.paddingExtraSmall,
               child: Material(
                 color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
                   onTap: () {
                     ref.read(favoriteCharactersProvider.notifier).toggleFavorite(character.id);
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(6.0),
+                    padding: const EdgeInsets.all(AppDimensions.paddingSmall - 2),
                     child: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.redAccent[100] : Colors.white.withOpacity(0.9),
-                      size: 20,
-                      shadows: isFavorite ? [Shadow(blurRadius: 3.0, color: Colors.redAccent.withOpacity(0.7))] : null,
+                      color: isFavorite ? AppTheme.favoriteRed : Colors.white.withOpacity(0.9),
+                      size: AppDimensions.iconSizeMedium,
+                      shadows: isFavorite ? [Shadow(blurRadius: 3.0, color: AppTheme.favoriteRed.withOpacity(0.7))] : null,
                     ),
                   ),
                 ),
               ),
             ),
             Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
+              bottom: AppDimensions.paddingZero,
+              left: AppDimensions.paddingZero,
+              right: AppDimensions.paddingZero,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      houseColor.withOpacity(0.9),
+                      houseColor.withOpacity(0.95),
                       houseColor.withOpacity(0.0),
                     ],
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
+                    stops: const [0.0, 0.8]
                   ),
                 ),
                 child: Column(
@@ -193,28 +107,14 @@ class CharacterCard extends ConsumerWidget {
                   children: [
                     Text(
                       character.name,
-                      style: GoogleFonts.cinzelDecorative(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(blurRadius: 2.0, color: Colors.black.withOpacity(0.5))
-                        ]
-                      ),
+                      style: AppTextStyles.cardTitleLarge.copyWith(fontSize: 16),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (character.house.isNotEmpty)
                       Text(
                         character.house,
-                        style: GoogleFonts.lato(
-                          color: houseAccentColor.withOpacity(isDark ? 1.0 : 0.9),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          shadows: [
-                            Shadow(blurRadius: 1.0, color: Colors.black.withOpacity(0.4))
-                          ]
-                        ),
+                        style: AppTextStyles.cardSubtitle.copyWith(color: houseAccentColor.withOpacity(isDark ? 1.0 : 0.9), fontSize: 13),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -223,17 +123,17 @@ class CharacterCard extends ConsumerWidget {
               ),
             ),
             Positioned(
-              top: 8,
-              right: 8,
+              top: AppDimensions.paddingSmall,
+              right: AppDimensions.paddingSmall,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (character.hogwartsStudent)
-                    _buildInfoChip('Öğrenci', Icons.school, houseColor, isDark),
+                    _buildInfoChip(context, AppStrings.charactersTabStudents, Icons.school, houseColor, isDark),
                   if (character.hogwartsStaff)
-                    _buildInfoChip('Personel', Icons.work, houseColor, isDark),
+                    _buildInfoChip(context, AppStrings.charactersTabStaff, Icons.work, houseColor, isDark),
                   if (character.wizard && !character.hogwartsStudent && !character.hogwartsStaff)
-                     _buildInfoChip('Büyücü', Icons.star, houseColor, isDark),
+                    _buildInfoChip(context, AppStrings.characterIsWizard, Icons.star, houseColor, isDark),
                 ],
               )
             )
@@ -243,21 +143,22 @@ class CharacterCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoChip(String label, IconData icon, Color bgColor, bool isDark) {
+  Widget _buildInfoChip(BuildContext context, String label, IconData icon, Color bgColor, bool isDark) {
     final chipColor = isDark ? bgColor.withOpacity(0.8) : bgColor;
+    final theme = Theme.of(context);
     final textColor = ThemeData.estimateBrightnessForColor(chipColor) == Brightness.dark
-        ? Colors.white.withOpacity(0.9)
-        : Colors.black.withOpacity(0.8);
+        ? theme.colorScheme.onPrimary.withOpacity(0.9)
+        : theme.colorScheme.onSurface.withOpacity(0.8);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      margin: const EdgeInsets.only(bottom: AppDimensions.paddingExtraSmall),
+      padding: AppDimensions.chipPadding,
       decoration: BoxDecoration(
         color: chipColor,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: theme.colorScheme.shadow.withOpacity(0.2),
             blurRadius: 2,
             offset: const Offset(1, 1),
           )
@@ -266,47 +167,11 @@ class CharacterCard extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: textColor),
-          const SizedBox(width: 4),
+          Icon(icon, size: AppDimensions.iconSizeExtraSmall, color: textColor),
+          const SizedBox(width: AppDimensions.paddingExtraSmall),
           Text(
             label,
-            style: GoogleFonts.lato(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListInfoChip(String label, IconData icon, Color bgColor, bool isDark) {
-    final chipColor = isDark ? bgColor.withOpacity(0.2) : bgColor.withOpacity(0.15);
-    final textColor = isDark ? Colors.white.withOpacity(0.9) : bgColor;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: chipColor,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: bgColor.withOpacity(0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 10, color: textColor),
-          const SizedBox(width: 3),
-          Text(
-            label,
-            style: GoogleFonts.lato(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
+            style: AppTextStyles.bodySmall(context).copyWith(fontSize: 11, fontWeight: FontWeight.bold, color: textColor),
           ),
         ],
       ),

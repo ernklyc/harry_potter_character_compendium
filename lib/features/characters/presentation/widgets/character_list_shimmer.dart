@@ -1,64 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; // Boyutlar import edildi
 
 class CharacterListShimmer extends StatelessWidget {
   const CharacterListShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Renkler tema'dan alınır
     final cardColor = Theme.of(context).cardTheme.color ?? Colors.grey[300]!;
-    final shimmerBaseColor = Theme.of(context).brightness == Brightness.light
-        ? Colors.grey[300]!
-        : Colors.grey[700]!;
-    final shimmerHighlightColor = Theme.of(context).brightness == Brightness.light
-        ? Colors.grey[100]!
-        : Colors.grey[500]!;
+    final shimmerBaseColor = Theme.of(context).colorScheme.surfaceVariant;
+    final shimmerHighlightColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.1);
 
     return Shimmer.fromColors(
       baseColor: shimmerBaseColor,
       highlightColor: shimmerHighlightColor,
       child: GridView.builder(
-        padding: const EdgeInsets.all(16),
+        // Padding ve spacing için sabitler kullanıldı
+        padding: const EdgeInsets.all(AppDimensions.paddingLarge),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.7, // Kartların en boy oranına göre ayarla
+          crossAxisSpacing: AppDimensions.paddingMedium,
+          mainAxisSpacing: AppDimensions.paddingMedium,
+          // Gerçek kartın oranına yakın olmalı
+          childAspectRatio: 0.7, 
         ),
-        itemCount: 6, // Ekrana sığacak kadar placeholder göster
+        itemCount: 6,
         itemBuilder: (context, index) {
           return Card(
             color: cardColor,
+             // Shape tema'dan alınabilir veya sabit
+            shape: Theme.of(context).cardTheme.shape ?? RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(AppDimensions.radiusLarge)
+             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Placeholder for image
                 Container(
-                  height: 150,
-                  color: Colors.white, // Shimmer'ın etkili olması için düz renk
+                   // Yükseklik kart tasarımına göre ayarlanmalı
+                  height: 150, 
+                  // Placeholder'ın rengi baseColor ile uyumlu olmalı
+                  color: shimmerBaseColor, 
                 ),
-                // Placeholder for text
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                   // Padding için sabit kullanıldı
+                  padding: const EdgeInsets.all(AppDimensions.paddingSmall),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 16,
+                        height: AppDimensions.iconSizeMedium, // Metin yüksekliğine yakın
                         width: double.infinity,
-                        color: Colors.white,
-                        margin: const EdgeInsets.only(bottom: 4),
+                        color: shimmerBaseColor,
+                         // Margin için sabit kullanıldı
+                        margin: const EdgeInsets.only(bottom: AppDimensions.paddingExtraSmall),
                       ),
                       Container(
-                        height: 12,
+                        height: AppDimensions.iconSizeSmall, // Metin yüksekliğine yakın
                         width: 100,
-                        color: Colors.white,
-                        margin: const EdgeInsets.only(bottom: 4),
+                        color: shimmerBaseColor,
+                        margin: const EdgeInsets.only(bottom: AppDimensions.paddingExtraSmall),
                       ),
                       Container(
-                        height: 10,
+                        height: AppDimensions.iconSizeExtraSmall + 2, // Metin yüksekliğine yakın
                         width: 80,
-                        color: Colors.white,
+                        color: shimmerBaseColor,
                       ),
                     ],
                   ),
