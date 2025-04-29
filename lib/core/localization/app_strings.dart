@@ -6,7 +6,10 @@ class AppStrings {
   // Dil değiştirme metodu
   static void setLanguage(String languageCode) {
     if (languageCode == 'tr' || languageCode == 'en') {
-      _currentLanguage = languageCode;
+      if (_currentLanguage != languageCode) {
+        _currentLanguage = languageCode;
+        _notifyListeners(); // Dil değiştiğinde dinleyicileri haberdar et
+      }
     }
   }
 
@@ -119,6 +122,7 @@ class AppStrings {
   
   // Yükleme ve Hata Ekranları
   static String get loading => _currentLanguage == 'tr' ? 'Yükleniyor...' : 'Loading...';
+  static String get characterDetailsLoading => _currentLanguage == 'tr' ? 'Karakter bilgileri yükleniyor...' : 'Loading character details...';
   static String get error => _currentLanguage == 'tr' ? 'Bir hata oluştu' : 'An error occurred';
   static String get noData => _currentLanguage == 'tr' ? 'Veri bulunamadı' : 'No data found';
   static String get noCharactersFound => _currentLanguage == 'tr' ? 'Karakter bulunamadı' : 'No characters found';

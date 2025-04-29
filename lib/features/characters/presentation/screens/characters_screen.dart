@@ -450,7 +450,9 @@ class CharactersScreen extends HookConsumerWidget {
                     // Ekranı yeniden çiz
                     (context as Element).markNeedsBuild();
                   },
-                  tooltip: AppStrings.getCurrentLanguage() == 'tr' ? 'Switch to English' : 'Türkçe\'ye geç',
+                  tooltip: AppStrings.getCurrentLanguage() == 'tr' 
+                      ? 'Switch to English' 
+                      : 'Türkçe\'ye Geç',
                 ),
         title: showSearchBar.value
               ? TextField(

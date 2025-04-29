@@ -62,7 +62,7 @@ class AppRouter {
 }
 
 // Alt gezinti çubuğuna sahip temel iskelet yapısı
-class ScaffoldWithNavBar extends StatelessWidget {
+class ScaffoldWithNavBar extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
   const ScaffoldWithNavBar({
@@ -71,17 +71,44 @@ class ScaffoldWithNavBar extends StatelessWidget {
   });
 
   @override
+  _ScaffoldWithNavBarState createState() => _ScaffoldWithNavBarState();
+}
+
+class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
+  @override
+  void initState() {
+    super.initState();
+    // Dil değişikliklerini dinlemek için listener ekle
+    AppStrings.addListener(_onLanguageChanged);
+  }
+
+  @override
+  void dispose() {
+    // Widget kaldırıldığında listener'ı kaldır
+    AppStrings.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  // Dil değiştiğinde çağrılacak metod
+  void _onLanguageChanged() {
+    // Widget'ı yeniden çizmek için setState çağır
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: navigationShell,
+      body: widget.navigationShell,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
+        selectedIndex: widget.navigationShell.currentIndex,
         onDestinationSelected: (index) {
-          if (navigationShell.currentIndex != index) {
-            navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+          if (widget.navigationShell.currentIndex != index) {
+            widget.navigationShell.goBranch(index, initialLocation: index == widget.navigationShell.currentIndex);
           }
         },
         backgroundColor: isDark ? colors.surface.withOpacity(0.5) : AppTheme.gryffindorRed,

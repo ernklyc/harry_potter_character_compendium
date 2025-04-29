@@ -212,15 +212,14 @@ class CharacterDetailScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(color: theme.colorScheme.primary),
-              const SizedBox(height: AppDimensions.paddingLarge), // Sabit kullanıldı
+              const CircularProgressIndicator(),
+              const SizedBox(height: AppDimensions.paddingLarge),
               Text(
-                'Karakter bilgileri yükleniyor...', 
-                 // AppTextStyles veya theme.textTheme kullanılabilir
-                 style: AppTextStyles.bodyRegular(context),
-                ),
+               AppStrings.characterDetailsLoading,
+               style: AppTextStyles.bodyRegular(context),
+              ),
             ],
-          )
+          ),
         ),
         error: (err, stack) => ErrorDisplay(
           message: AppStrings.characterLoadingError,
