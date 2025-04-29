@@ -51,10 +51,10 @@ class CharacterFilters {
   }
 
   bool hasFilters() {
-    return searchQuery.isNotEmpty ||
-           houses.isNotEmpty ||
-           species.isNotEmpty ||
-           genders.isNotEmpty ||
+    return searchQuery.isNotEmpty || 
+           houses.isNotEmpty || 
+           species.isNotEmpty || 
+           genders.isNotEmpty || 
            ancestries.isNotEmpty;
   }
 
@@ -116,7 +116,7 @@ class CharactersScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 3);
     final searchController = useTextEditingController();
     final showSearchBar = useState(false);
-    final currentTitle = useState(AppStrings.charactersTitle);
+    final currentTitle = useState(AppStrings.charactersTabAll);
     
     final List<String> tabTitles = const [
       AppStrings.charactersTabAll, 
@@ -139,8 +139,8 @@ class CharactersScreen extends HookConsumerWidget {
     // useEffect ile arama değişimini izlemek için useEffect
     useEffect(() {
       void onSearchChanged() {
-        final filters = ref.read(characterFiltersProvider);
-        ref.read(characterFiltersProvider.notifier).state = 
+    final filters = ref.read(characterFiltersProvider);
+    ref.read(characterFiltersProvider.notifier).state = 
             filters.copyWith(searchQuery: searchController.text);
       }
       
@@ -178,48 +178,48 @@ class CharactersScreen extends HookConsumerWidget {
     
     // Filtreleme dialogu
     void showFilterDialog(List<Character> allCharacters) {
-      // Mevcut filtreleri al
-      final currentFilters = ref.read(characterFiltersProvider);
-      
-      // Karakter verilerinden benzersiz değerleri topla
-      final houses = allCharacters
-          .where((c) => c.house.isNotEmpty)
-          .map((c) => c.house.toLowerCase())
-          .toSet();
-      
-      final species = allCharacters
-          .where((c) => c.species.isNotEmpty)
-          .map((c) => c.species.toLowerCase())
-          .toSet();
-      
-      final genders = allCharacters
-          .where((c) => c.gender.isNotEmpty)
-          .map((c) => c.gender.toLowerCase())
-          .toSet();
-      
-      final ancestries = allCharacters
-          .where((c) => c.ancestry.isNotEmpty)
-          .map((c) => c.ancestry.toLowerCase())
-          .toSet();
-      
-      // Çalışma kopyası filtreleri
-      Set<String> selectedHouses = Set.from(currentFilters.houses);
-      Set<String> selectedSpecies = Set.from(currentFilters.species);
-      Set<String> selectedGenders = Set.from(currentFilters.genders);
-      Set<String> selectedAncestries = Set.from(currentFilters.ancestries);
-      
-      showDialog(
-        context: context,
+    // Mevcut filtreleri al
+    final currentFilters = ref.read(characterFiltersProvider);
+    
+    // Karakter verilerinden benzersiz değerleri topla
+    final houses = allCharacters
+        .where((c) => c.house.isNotEmpty)
+        .map((c) => c.house.toLowerCase())
+        .toSet();
+    
+    final species = allCharacters
+        .where((c) => c.species.isNotEmpty)
+        .map((c) => c.species.toLowerCase())
+        .toSet();
+    
+    final genders = allCharacters
+        .where((c) => c.gender.isNotEmpty)
+        .map((c) => c.gender.toLowerCase())
+        .toSet();
+    
+    final ancestries = allCharacters
+        .where((c) => c.ancestry.isNotEmpty)
+        .map((c) => c.ancestry.toLowerCase())
+        .toSet();
+    
+    // Çalışma kopyası filtreleri
+    Set<String> selectedHouses = Set.from(currentFilters.houses);
+    Set<String> selectedSpecies = Set.from(currentFilters.species);
+    Set<String> selectedGenders = Set.from(currentFilters.genders);
+    Set<String> selectedAncestries = Set.from(currentFilters.ancestries);
+    
+    showDialog(
+      context: context,
         builder: (dialogContext) {
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
                 backgroundColor: AppTheme.gryffindorRed, // Arka plan kırmızı olarak değiştirildi
                 title: Text(
                   AppStrings.charactersFilterTitle,
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-                content: SingleChildScrollView(
+              content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,23 +370,23 @@ class CharactersScreen extends HookConsumerWidget {
                         }).toList(),
                       ),
                     ],
-                  ),
                 ),
-                actions: [
-                  TextButton(
+              ),
+              actions: [
+                TextButton(
                     child: const Text(
                       AppStrings.apply,
                       style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold),
                     ),
-                    onPressed: () {
-                      ref.read(characterFiltersProvider.notifier).state = CharacterFilters(
-                        searchQuery: currentFilters.searchQuery,
-                        houses: selectedHouses,
-                        species: selectedSpecies,
-                        genders: selectedGenders,
-                        ancestries: selectedAncestries,
-                      );
-                      Navigator.of(context).pop();
+                  onPressed: () {
+                    ref.read(characterFiltersProvider.notifier).state = CharacterFilters(
+                      searchQuery: currentFilters.searchQuery,
+                      houses: selectedHouses,
+                      species: selectedSpecies,
+                      genders: selectedGenders,
+                      ancestries: selectedAncestries,
+                    );
+                    Navigator.of(context).pop();
                     },
                   ),
                   TextButton(
@@ -398,41 +398,41 @@ class CharactersScreen extends HookConsumerWidget {
                       clearFilters();
                       Navigator.of(context).pop();
                     },
-                  ),
-                ],
-              );
-            },
-          );
-        },
+                ),
+              ],
+            );
+          },
+        );
+      },
       );
     }
     
     return Scaffold(
-      appBar: AppBar(
+        appBar: AppBar(
         leading: showSearchBar.value
-            ? IconButton(
+              ? IconButton(
                 icon: const Icon(Icons.arrow_back, size: AppDimensions.iconSizeLarge),
-                onPressed: () {
+                  onPressed: () {
                   showSearchBar.value = false;
                   clearFilters();
-                },
-              )
-            : null,
+                  },
+                )
+              : null,
         title: showSearchBar.value
-            ? TextField(
+              ? TextField(
                 controller: searchController,
                 style: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white),
                 autofocus: true,
                 cursorColor: AppTheme.goldAccent,
                 decoration: InputDecoration(
                   hintText: AppStrings.charactersSearchHint,
-                  border: InputBorder.none,
+                    border: InputBorder.none,
                   hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
                 ),
               )
             : Text(currentTitle.value),
-        actions: [
-          // Arama butonu
+          actions: [
+            // Arama butonu
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
@@ -509,21 +509,21 @@ class CharactersScreen extends HookConsumerWidget {
               ),
             ),
         ],
-        bottom: TabBar(
+          bottom: TabBar(
           controller: tabController,
-          tabs: const [
-            Tab(text: AppStrings.charactersTabAll),
-            Tab(text: AppStrings.charactersTabStudents),
-            Tab(text: AppStrings.charactersTabStaff),
-          ],
+            tabs: const [
+            Tab(icon: Icon(Icons.people)),  // Tüm karakterler için ikon
+            Tab(icon: Icon(Icons.school)),  // Öğrenciler için ikon
+            Tab(icon: Icon(Icons.work)),    // Personel için ikon
+            ],
+          ),
         ),
-      ),
-      body: TabBarView(
+        body: TabBarView(
         controller: tabController,
-        children: [
+          children: [
           // Tüm karakterler tab'ı
           allCharactersAsync.when(
-            data: (characters) {
+              data: (characters) {
               final filteredCharacters = filterCharacters(characters);
               
               if (filteredCharacters.isEmpty) {
@@ -557,15 +557,15 @@ class CharactersScreen extends HookConsumerWidget {
                 );
               }
               
-              return RefreshIndicator(
-                onRefresh: () => ref.refresh(allCharactersProvider.future),
-                child: CharacterList(
-                  characters: filteredCharacters,
-                  onCharacterTap: navigateToCharacterDetail,
-                ),
-              );
-            },
-            loading: () => const CharacterListShimmer(),
+                return RefreshIndicator(
+                  onRefresh: () => ref.refresh(allCharactersProvider.future),
+                  child: CharacterList(
+                    characters: filteredCharacters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
+                );
+              },
+              loading: () => const CharacterListShimmer(),
             error: (err, stack) => ErrorDisplay(
               message: AppStrings.charactersLoadingError,
               onRetry: () => ref.invalidate(allCharactersProvider),
@@ -574,7 +574,7 @@ class CharactersScreen extends HookConsumerWidget {
           
           // Öğrenciler tab'ı
           hogwartsStudentsAsync.when(
-            data: (characters) {
+              data: (characters) {
               final filteredCharacters = filterCharacters(characters);
               
               if (filteredCharacters.isEmpty) {
@@ -608,15 +608,15 @@ class CharactersScreen extends HookConsumerWidget {
                 );
               }
               
-              return RefreshIndicator(
-                onRefresh: () => ref.refresh(hogwartsStudentsProvider.future),
-                child: CharacterList(
-                  characters: filteredCharacters,
-                  onCharacterTap: navigateToCharacterDetail,
-                ),
-              );
-            },
-            loading: () => const CharacterListShimmer(),
+                return RefreshIndicator(
+                  onRefresh: () => ref.refresh(hogwartsStudentsProvider.future),
+                  child: CharacterList(
+                    characters: filteredCharacters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
+                );
+              },
+              loading: () => const CharacterListShimmer(),
             error: (err, stack) => ErrorDisplay(
               message: AppStrings.studentsLoadingError,
               onRetry: () => ref.invalidate(hogwartsStudentsProvider),
@@ -625,7 +625,7 @@ class CharactersScreen extends HookConsumerWidget {
           
           // Personel tab'ı
           hogwartsStaffAsync.when(
-            data: (characters) {
+              data: (characters) {
               final filteredCharacters = filterCharacters(characters);
               
               if (filteredCharacters.isEmpty) {
@@ -659,21 +659,21 @@ class CharactersScreen extends HookConsumerWidget {
                 );
               }
               
-              return RefreshIndicator(
-                onRefresh: () => ref.refresh(hogwartsStaffProvider.future),
-                child: CharacterList(
-                  characters: filteredCharacters,
-                  onCharacterTap: navigateToCharacterDetail,
-                ),
-              );
-            },
-            loading: () => const CharacterListShimmer(),
+                return RefreshIndicator(
+                  onRefresh: () => ref.refresh(hogwartsStaffProvider.future),
+                  child: CharacterList(
+                    characters: filteredCharacters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
+                );
+              },
+              loading: () => const CharacterListShimmer(),
             error: (err, stack) => ErrorDisplay(
               message: AppStrings.staffLoadingError,
               onRetry: () => ref.invalidate(hogwartsStaffProvider),
+              ),
             ),
-          ),
-        ],
+          ],
       ),
     );
   }
