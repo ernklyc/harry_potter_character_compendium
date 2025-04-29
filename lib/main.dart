@@ -12,23 +12,24 @@ void _handleError(Object error, StackTrace stack) {
 }
 
 Future<void> main() async {
-  // Flutter bağlamını başlat
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Tüm hataları yakalamak için bir hata yakalayıcı ekle
-  FlutterError.onError = (FlutterErrorDetails details) {
-    FlutterError.presentError(details);
-    _handleError(details.exception, details.stack ?? StackTrace.empty);
-  };
-  
-  // Platformdan gelen asenkron hataları yakala
-  WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
-    _handleError(error, stack);
-    return true;
-  };
-  
   // Zone içinde çalıştırarak yakalanmamış tüm hataları ele al
   runZonedGuarded(() {
+    // Flutter bağlamını aynı zone içinde başlat
+    WidgetsFlutterBinding.ensureInitialized();
+    
+    // Tüm hataları yakalamak için bir hata yakalayıcı ekle
+    FlutterError.onError = (FlutterErrorDetails details) {
+      FlutterError.presentError(details);
+      _handleError(details.exception, details.stack ?? StackTrace.empty);
+    };
+    
+    // Platformdan gelen asenkron hataları yakala
+    WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
+      _handleError(error, stack);
+      return true;
+    };
+    
+    // Aynı zone içinde uygulamayı başlat
     runApp(
       const ProviderScope(
         child: MyApp(),
