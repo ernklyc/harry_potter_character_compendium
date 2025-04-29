@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -22,6 +23,12 @@ class AppTheme {
       centerTitle: true,
       backgroundColor: gryffindorRed, // AppBar Gryffindor Kırmızısı
       foregroundColor: Colors.white, // AppBar yazı rengi beyaz
+      iconTheme: const IconThemeData(color: Colors.white), // Geri butonu vb. ikonlar için
+      systemOverlayStyle: SystemUiOverlayStyle.light.copyWith( // Durum çubuğu stili
+        statusBarColor: Colors.transparent, // Şeffaf arka plan (AppBar rengi görünür)
+        statusBarIconBrightness: Brightness.light, // Durum çubuğu ikonları (saat, pil vb.) açık renk
+        statusBarBrightness: Brightness.dark, // iOS için durum çubuğu metni
+      ),
       titleTextStyle: GoogleFonts.cinzelDecorative( // Tematik başlık fontu
         fontSize: 22,
         fontWeight: FontWeight.bold,
@@ -31,9 +38,34 @@ class AppTheme {
     tabBarTheme: TabBarTheme( // TabBar özelleştirmesi
       labelColor: goldAccent,
       unselectedLabelColor: Colors.white.withOpacity(0.7),
-      indicatorColor: goldAccent,
-      labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
-      unselectedLabelStyle: GoogleFonts.lato(),
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicator: BoxDecoration(
+        color: Colors.white.withOpacity(0.15), // Hafif vurgu rengi
+        borderRadius: BorderRadius.circular(8.0), // Yuvarlak köşeler
+      ),
+      labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 11),
+      unselectedLabelStyle: GoogleFonts.lato(fontSize: 11),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: gryffindorRed,
+      indicatorColor: goldAccent.withOpacity(0.9),
+      height: 65,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      iconTheme: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
+          return IconThemeData(color: primarySeed, size: 26);
+        }
+        return IconThemeData(color: Colors.white.withOpacity(0.8), size: 24);
+      }),
+      labelTextStyle: MaterialStateProperty.resolveWith((states) {
+        final style = GoogleFonts.lato(fontSize: 11);
+        if (states.contains(MaterialState.selected)) {
+          return style.copyWith(fontWeight: FontWeight.bold, color: primarySeed);
+        }
+        return style.copyWith(color: Colors.white.withOpacity(0.8));
+      }),
+      elevation: 3,
+      surfaceTintColor: Colors.transparent,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -73,6 +105,12 @@ class AppTheme {
       centerTitle: true,
       backgroundColor: gryffindorRed,
       foregroundColor: Colors.white,
+      iconTheme: const IconThemeData(color: Colors.white),
+      systemOverlayStyle: SystemUiOverlayStyle.light.copyWith( // Durum çubuğu stili (Karanlık tema için de light ikonlar)
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
       titleTextStyle: GoogleFonts.cinzelDecorative( // Tematik başlık fontu
         fontSize: 22,
         fontWeight: FontWeight.bold,
@@ -83,8 +121,30 @@ class AppTheme {
       labelColor: goldAccent,
       unselectedLabelColor: Colors.white.withOpacity(0.7),
       indicatorColor: goldAccent,
-      labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold),
-      unselectedLabelStyle: GoogleFonts.lato(),
+      indicatorSize: TabBarIndicatorSize.tab, // Gösterge boyutu tab'ın genişliği kadar
+      labelStyle: GoogleFonts.lato(fontWeight: FontWeight.bold, fontSize: 11), // Etiket font boyutu ayarlandı
+      unselectedLabelStyle: GoogleFonts.lato(fontSize: 11), // Etiket font boyutu ayarlandı
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: ColorScheme.fromSeed(seedColor: primarySeed, brightness: Brightness.dark).surface.withOpacity(0.5), // Koyu tema arkaplanı
+      indicatorColor: goldAccent.withOpacity(0.9),
+      height: 65,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      iconTheme: MaterialStateProperty.resolveWith((states) {
+        if (states.contains(MaterialState.selected)) {
+          return IconThemeData(color: primarySeed, size: 26);
+        }
+        return IconThemeData(color: Colors.white.withOpacity(0.8), size: 24);
+      }),
+      labelTextStyle: MaterialStateProperty.resolveWith((states) {
+        final style = GoogleFonts.lato(fontSize: 11);
+        if (states.contains(MaterialState.selected)) {
+          return style.copyWith(fontWeight: FontWeight.bold, color: primarySeed);
+        }
+        return style.copyWith(color: Colors.white.withOpacity(0.8));
+      }),
+      elevation: 3,
+      surfaceTintColor: Colors.transparent,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

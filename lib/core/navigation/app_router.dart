@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/screens/character_detail_screen.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/screens/characters_screen.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/screens/spells_screen.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -59,25 +61,40 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: (index) {
-          navigationShell.goBranch(index);
+          if (navigationShell.currentIndex != index) {
+            navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+          }
         },
-        destinations: const [
+        backgroundColor: isDark ? colors.surface.withOpacity(0.5) : AppTheme.gryffindorRed,
+        indicatorColor: AppTheme.goldAccent.withOpacity(0.8),
+        height: 65,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        animationDuration: const Duration(milliseconds: 500),
+        
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
+            icon: Icon(Icons.person_outline, color: Colors.white.withOpacity(0.7)),
+            selectedIcon: const Icon(Icons.person, color: AppTheme.primarySeed),
             label: 'Karakterler',
+            tooltip: 'Karakterleri Görüntüle',
           ),
           NavigationDestination(
-            icon: Icon(Icons.auto_fix_high_outlined),
-            selectedIcon: Icon(Icons.auto_fix_high),
+            icon: Icon(Icons.auto_fix_high_outlined, color: Colors.white.withOpacity(0.7)),
+            selectedIcon: const Icon(Icons.auto_fix_high, color: AppTheme.primarySeed),
             label: 'Büyüler',
+            tooltip: 'Büyüleri Görüntüle',
           ),
         ],
+        surfaceTintColor: Colors.transparent,
+        elevation: 3,
       ),
     );
   }

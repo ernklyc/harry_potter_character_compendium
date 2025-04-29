@@ -1,28 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
+import 'package:harry_potter_character_compendium/core/widgets/error_display.dart';
 import 'package:harry_potter_character_compendium/features/spells/domain/providers/spells_providers.dart';
-import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list.dart';
+import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_card.dart';
+import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list_shimmer.dart';
 
 class SpellsScreen extends ConsumerWidget {
   const SpellsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allSpells = ref.watch(allSpellsProvider);
+    final allSpellsAsync = ref.watch(allSpellsProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Büyüler'),
-      ),
-      body: allSpells.when(
-        data: (spells) => SpellList(spells: spells),
-        loading: () => const SpellList(
-          spells: [],
-          isLoading: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.gryffindorPrimary.withOpacity(0.9),
+                AppTheme.gryffindorPrimary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
         ),
-        error: (err, stack) => SpellList(
-          spells: [],
-          errorMessage: 'Büyüler yüklenirken bir hata oluştu: $err',
+      ),
+      body: allSpellsAsync.when(
+        data: (spells) {
+          if (spells.isEmpty) {
+            return const Center(
+              child: Text('Gösterilecek büyü bulunamadı.'),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            itemCount: spells.length,
+            itemBuilder: (context, index) {
+              final spell = spells[index];
+              return SpellCard(spell: spell)
+                  .animate()
+                  .fadeIn(duration: 300.ms, delay: (50 * index).ms)
+                  .slideY(begin: 0.1, curve: Curves.easeOut);
+            },
+          );
+        },
+        loading: () => const SpellListShimmer(),
+        error: (err, stack) => ErrorDisplay(
+          message: 'Büyüler yüklenirken bir hata oluştu.',
+          onRetry: () => ref.invalidate(allSpellsProvider),
         ),
       ),
     );

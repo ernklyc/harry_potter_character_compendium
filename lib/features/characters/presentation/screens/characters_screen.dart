@@ -6,6 +6,7 @@ import 'package:harry_potter_character_compendium/features/characters/domain/pro
 import 'package:harry_potter_character_compendium/features/characters/presentation/screens/character_detail_screen.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/widgets/character_list.dart';
 import 'package:harry_potter_character_compendium/features/characters/presentation/widgets/character_list_shimmer.dart';
+import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 
 class CharactersScreen extends ConsumerStatefulWidget {
   const CharactersScreen({super.key});
@@ -66,14 +67,29 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
       length: 4,
       child: Scaffold(
         appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.gryffindorPrimary.withOpacity(0.9),
+                  AppTheme.gryffindorPrimary,
+                  // AppTheme.gryffindorPrimary.withOpacity(0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           bottom: TabBar(
             controller: _tabController,
             isScrollable: false,
+            indicatorWeight: 3,
+            indicatorPadding: EdgeInsets.symmetric(horizontal: 8.0),
             tabs: const [
-              Tab(icon: Icon(Icons.people_alt_outlined)),
-              Tab(icon: Icon(Icons.school_outlined)),
-              Tab(icon: Icon(Icons.work_outline)),
-              Tab(icon: Icon(Icons.shield_outlined)),
+              Tab(icon: Icon(Icons.people_alt_outlined), text: 'Tümü'),
+              Tab(icon: Icon(Icons.school_outlined), text: 'Öğrenciler'),
+              Tab(icon: Icon(Icons.work_outline), text: 'Personel'),
+              Tab(icon: Icon(Icons.shield_outlined), text: 'Gryffindor'),
             ],
           ),
         ),

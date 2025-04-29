@@ -179,7 +179,7 @@ class CharacterCard extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.lato(
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),
