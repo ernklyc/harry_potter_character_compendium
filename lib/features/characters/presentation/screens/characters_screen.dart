@@ -84,7 +84,20 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_currentTitle), // Dinamik başlık
+          title: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(
+                 opacity: animation,
+                 child: child,
+               );
+            },
+            child: Text(
+              _currentTitle,
+              key: ValueKey<String>(_currentTitle),
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+          ),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -115,50 +128,74 @@ class _CharactersScreenState extends ConsumerState<CharactersScreen> with Single
           controller: _tabController,
           children: [
             allCharacters.when(
-              data: (characters) => CharacterList(
-                characters: characters,
-                onCharacterTap: navigateToCharacterDetail,
+              data: (characters) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(allCharactersProvider.future),
+                 child: CharacterList(
+                    characters: characters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
               ),
               loading: () => const CharacterListShimmer(),
-              error: (err, stack) => ErrorDisplay(
-                message: 'Karakterler yüklenemedi.',
-                onRetry: () => _retryLoad(ref, 0),
+              error: (err, stack) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(allCharactersProvider.future),
+                 child: ErrorDisplay(
+                    message: 'Karakterler yüklenemedi.',
+                    onRetry: () => _retryLoad(ref, 0),
+                  ),
               ),
             ),
             
             hogwartsStudents.when(
-              data: (characters) => CharacterList(
-                characters: characters,
-                onCharacterTap: navigateToCharacterDetail,
+               data: (characters) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(hogwartsStudentsProvider.future),
+                 child: CharacterList(
+                    characters: characters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
               ),
               loading: () => const CharacterListShimmer(),
-              error: (err, stack) => ErrorDisplay(
-                message: 'Öğrenciler yüklenemedi.',
-                onRetry: () => _retryLoad(ref, 1),
+               error: (err, stack) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(hogwartsStudentsProvider.future),
+                 child: ErrorDisplay(
+                    message: 'Öğrenciler yüklenemedi.',
+                    onRetry: () => _retryLoad(ref, 1),
+                  ),
               ),
             ),
             
             hogwartsStaff.when(
-              data: (characters) => CharacterList(
-                characters: characters,
-                onCharacterTap: navigateToCharacterDetail,
+               data: (characters) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(hogwartsStaffProvider.future),
+                 child: CharacterList(
+                    characters: characters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
               ),
               loading: () => const CharacterListShimmer(),
-              error: (err, stack) => ErrorDisplay(
-                message: 'Personel yüklenemedi.',
-                onRetry: () => _retryLoad(ref, 2),
+               error: (err, stack) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(hogwartsStaffProvider.future),
+                 child: ErrorDisplay(
+                    message: 'Personel yüklenemedi.',
+                    onRetry: () => _retryLoad(ref, 2),
+                  ),
               ),
             ),
             
             gryffindorCharacters.when(
-              data: (characters) => CharacterList(
-                characters: characters,
-                onCharacterTap: navigateToCharacterDetail,
+               data: (characters) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(houseCharactersProvider('gryffindor').future),
+                 child: CharacterList(
+                    characters: characters,
+                    onCharacterTap: navigateToCharacterDetail,
+                  ),
               ),
               loading: () => const CharacterListShimmer(),
-              error: (err, stack) => ErrorDisplay(
-                message: 'Gryffindor üyeleri yüklenemedi.',
-                onRetry: () => _retryLoad(ref, 3),
+               error: (err, stack) => RefreshIndicator(
+                 onRefresh: () => ref.refresh(houseCharactersProvider('gryffindor').future),
+                 child: ErrorDisplay(
+                    message: 'Gryffindor üyeleri yüklenemedi.',
+                    onRetry: () => _retryLoad(ref, 3),
+                  ),
               ),
             ),
           ],

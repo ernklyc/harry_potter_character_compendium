@@ -33,26 +33,35 @@ class SpellsScreen extends ConsumerWidget {
       body: allSpellsAsync.when(
         data: (spells) {
           if (spells.isEmpty) {
-            return const Center(
-              child: Text('Gösterilecek büyü bulunamadı.'),
-            );
+            return RefreshIndicator(
+               onRefresh: () => ref.refresh(allSpellsProvider.future),
+               child: const Center(
+                child: Text('Gösterilecek büyü bulunamadı.'),
+               ),
+             );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.only(top: 8, bottom: 8),
-            itemCount: spells.length,
-            itemBuilder: (context, index) {
-              final spell = spells[index];
-              return SpellCard(spell: spell)
-                  .animate()
-                  .fadeIn(duration: 200.ms, delay: (30 * index).ms)
-                  .slideY(begin: 0.05, duration: 200.ms, curve: Curves.easeOut);
-            },
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(allSpellsProvider.future),
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 8, bottom: 8),
+              itemCount: spells.length,
+              itemBuilder: (context, index) {
+                final spell = spells[index];
+                return SpellCard(spell: spell)
+                    .animate()
+                    .fadeIn(duration: 200.ms, delay: (30 * index).ms)
+                    .slideY(begin: 0.05, duration: 200.ms, curve: Curves.easeOut);
+              },
+            ),
           );
         },
         loading: () => const SpellListShimmer(),
-        error: (err, stack) => ErrorDisplay(
-          message: 'Büyüler yüklenirken bir hata oluştu.',
-          onRetry: () => ref.invalidate(allSpellsProvider),
+        error: (err, stack) => RefreshIndicator(
+           onRefresh: () => ref.refresh(allSpellsProvider.future),
+           child: ErrorDisplay(
+            message: 'Büyüler yüklenirken bir hata oluştu.',
+            onRetry: () => ref.invalidate(allSpellsProvider),
+          ),
         ),
       ),
     );
