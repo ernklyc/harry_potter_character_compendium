@@ -6,6 +6,7 @@ import 'package:harry_potter_character_compendium/features/spells/presentation/s
 import 'package:harry_potter_character_compendium/features/favorites/presentation/screens/profile_screen.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -93,20 +94,20 @@ class ScaffoldWithNavBar extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.person_outline, color: Colors.white),
             selectedIcon: Icon(Icons.person, color: AppTheme.goldAccent),
-            label: 'Karakterler',
-            tooltip: 'Karakterleri Görüntüle',
+            label: AppStrings.characters,
+            tooltip: AppStrings.viewCharacters,
           ),
           NavigationDestination(
             icon: Icon(Icons.auto_fix_high_outlined, color: Colors.white),
             selectedIcon: Icon(Icons.auto_fix_high, color: AppTheme.goldAccent),
-            label: 'Büyüler',
-            tooltip: 'Büyüleri Görüntüle',
+            label: AppStrings.spells,
+            tooltip: AppStrings.viewSpells,
           ),
           NavigationDestination(
             icon: Icon(Icons.person, color: Colors.white),
             selectedIcon: Icon(Icons.person, color: AppTheme.goldAccent),
-            label: 'Profil',
-            tooltip: 'Profili Görüntüle',
+            label: AppStrings.profile,
+            tooltip: AppStrings.viewProfile,
           ),
         ],
         surfaceTintColor: Colors.transparent,

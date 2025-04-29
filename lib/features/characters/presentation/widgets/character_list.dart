@@ -17,7 +17,7 @@ class CharacterList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (characters.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(AppStrings.characterNotFound),
       );
     }

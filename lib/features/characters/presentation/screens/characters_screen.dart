@@ -118,7 +118,7 @@ class CharactersScreen extends HookConsumerWidget {
     final showSearchBar = useState(false);
     final currentTitle = useState(AppStrings.charactersTabAll);
     
-    final List<String> tabTitles = const [
+    final List<String> tabTitles = [
       AppStrings.charactersTabAll, 
       AppStrings.charactersTabStudents, 
       AppStrings.charactersTabStaff
@@ -374,7 +374,7 @@ class CharactersScreen extends HookConsumerWidget {
               ),
               actions: [
                 TextButton(
-                    child: const Text(
+                    child: Text(
                       AppStrings.apply,
                       style: TextStyle(color: AppTheme.goldAccent, fontWeight: FontWeight.bold),
                     ),
@@ -390,7 +390,7 @@ class CharactersScreen extends HookConsumerWidget {
                     },
                   ),
                   TextButton(
-                    child: const Text(
+                    child: Text(
                       AppStrings.clear,
                       style: TextStyle(color: Colors.white),
                     ),
@@ -417,7 +417,41 @@ class CharactersScreen extends HookConsumerWidget {
                   clearFilters();
                   },
                 )
-              : null,
+              : IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.goldAccent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.white, width: 1),
+                    ),
+                    child: Text(
+                      AppStrings.getCurrentLanguage().toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.gryffindorRed,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    // Dil değiştirme
+                    AppStrings.setLanguage(
+                      AppStrings.getCurrentLanguage() == 'tr' ? 'en' : 'tr'
+                    );
+                    // State'i yenile
+                    ref.invalidate(allCharactersProvider);
+                    ref.invalidate(hogwartsStudentsProvider);
+                    ref.invalidate(hogwartsStaffProvider);
+                    
+                    // Başlığı güncelle
+                    currentTitle.value = tabTitles[tabController.index];
+                    
+                    // Ekranı yeniden çiz
+                    (context as Element).markNeedsBuild();
+                  },
+                  tooltip: AppStrings.getCurrentLanguage() == 'tr' ? 'Switch to English' : 'Türkçe\'ye geç',
+                ),
         title: showSearchBar.value
               ? TextField(
                 controller: searchController,
@@ -511,7 +545,7 @@ class CharactersScreen extends HookConsumerWidget {
         ],
           bottom: TabBar(
           controller: tabController,
-            tabs: const [
+            tabs: [
             Tab(icon: Icon(Icons.people)),  // Tüm karakterler için ikon
             Tab(icon: Icon(Icons.school)),  // Öğrenciler için ikon
             Tab(icon: Icon(Icons.work)),    // Personel için ikon
@@ -540,7 +574,7 @@ class CharactersScreen extends HookConsumerWidget {
                       Text(
                         filters.hasFilters()
                             ? AppStrings.spellsSearchNotFound
-                            : "Karakter bulunamadı",
+                            : AppStrings.noCharactersFound,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.emptyListText(context),
                       ),
@@ -549,7 +583,7 @@ class CharactersScreen extends HookConsumerWidget {
                         ElevatedButton.icon(
                           onPressed: clearFilters,
                           icon: const Icon(Icons.clear_all),
-                          label: const Text(AppStrings.clear),
+                          label: Text(AppStrings.clear),
                         ),
                       ],
                     ],
@@ -591,7 +625,7 @@ class CharactersScreen extends HookConsumerWidget {
                       Text(
                         filters.hasFilters()
                             ? AppStrings.spellsSearchNotFound
-                            : "Öğrenci bulunamadı",
+                            : AppStrings.noStudentsFound,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.emptyListText(context),
                       ),
@@ -600,7 +634,7 @@ class CharactersScreen extends HookConsumerWidget {
                         ElevatedButton.icon(
                           onPressed: clearFilters,
                           icon: const Icon(Icons.clear_all),
-                          label: const Text(AppStrings.clear),
+                          label: Text(AppStrings.clear),
                         ),
                       ],
                     ],
@@ -642,7 +676,7 @@ class CharactersScreen extends HookConsumerWidget {
                       Text(
                         filters.hasFilters()
                             ? AppStrings.spellsSearchNotFound
-                            : "Personel bulunamadı",
+                            : AppStrings.noStaffFound,
                         textAlign: TextAlign.center,
                         style: AppTextStyles.emptyListText(context),
                       ),
@@ -651,7 +685,7 @@ class CharactersScreen extends HookConsumerWidget {
                         ElevatedButton.icon(
                           onPressed: clearFilters,
                           icon: const Icon(Icons.clear_all),
-                          label: const Text(AppStrings.clear),
+                          label: Text(AppStrings.clear),
                         ),
                       ],
                     ],

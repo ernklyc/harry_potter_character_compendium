@@ -46,10 +46,10 @@ class ProfileScreen extends HookConsumerWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.favoritesTitle),
+        title: Text(AppStrings.favoritesTitle),
         bottom: TabBar(
           controller: tabController,
-          tabs: const [
+          tabs: [
             Tab(text: AppStrings.favoritesTabCharacters, icon: Icon(Icons.person_outline)),
             Tab(text: AppStrings.favoritesTabSpells, icon: Icon(Icons.auto_fix_high_outlined)),
           ],

@@ -211,7 +211,7 @@ class SpellsScreen extends HookConsumerWidget {
                         ElevatedButton.icon(
                           onPressed: clearFilters, // Temizleme fonksiyonunu kullan
                           icon: const Icon(Icons.clear_all, size: AppDimensions.iconSizeMedium),
-                          label: const Text(AppStrings.spellsClearFilters),
+                          label: Text(AppStrings.spellsClearFilters),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.gryffindorPrimary,
                             foregroundColor: Colors.white,

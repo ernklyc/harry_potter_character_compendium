@@ -50,7 +50,7 @@ class CharacterDetailScreen extends ConsumerWidget {
       body: characterDetailAsync.when(
         data: (character) {
           if (character == null) {
-            return const Center(
+            return Center(
               child: ErrorDisplay(message: AppStrings.characterNotFound),
             );
           }
