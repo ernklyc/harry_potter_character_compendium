@@ -62,10 +62,15 @@ class SpellCard extends StatelessWidget {
         children: [
           if (spell.description.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(left: 16.0 + 28.0 + 16.0, right: 16.0, bottom: 16.0, top: 0), // İkona göre hizala
-              child: Text(
-                spell.description,
-                style: descriptionStyle,
+              // Padding'i biraz daha basit tutalım, sola yaslama için
+              padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+              child: Align(
+                 alignment: Alignment.centerLeft, // İçeriği sola hizala
+                 child: Text(
+                  spell.description,
+                  style: descriptionStyle,
+                  textAlign: TextAlign.start, // Metni sola yasla
+                 ),
               ),
             ),
         ],
