@@ -22,10 +22,10 @@ Uygulamanın çeşitli ekranlarına ait görünümler:
 
 | Açılış & Karakter Listesi | Karakter Detayı | Büyü Listesi |
 | :-----------------------: | :-------------: | :----------: |
-| ![Açılış & Karakter Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/1.jpg) | ![Karakter Detayı](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/2.jpg) | ![Büyü Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.jpg) |
-| **Favoriler (Karakter)** | **Favoriler (Büyü)** | **Karakter Filtreleme** |
+| ![Açılış & Karakter Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/1.jpg) | ![Açılış & Karakter Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/2.jpg) | ![Karakter Filtreleme](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.jpg) |
+| **Karakter Filtreleme** | **Karakter Detayı** | **Karakter Detayı** |
 | ![Favoriler - Karakter Sekmesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.1.jpg) | ![Favoriler - Büyü Sekmesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/4.jpg) | ![Karakter Filtreleme Dialogu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/5.jpg) |
-| **Karakter Arama** | **Büyü Arama** | **Dil Değiştirme** |
+| **Büyü Listesi** | **Favoriler** | **Favoriler** |
 | ![Karakter Arama Sonucu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/6.jpg) | ![Büyü Arama Sonucu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/7.jpg) | ![Dil Değiştirme Butonu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/8.jpg) |
 
 ## 🚀 Teknolojiler ve Mimarî
