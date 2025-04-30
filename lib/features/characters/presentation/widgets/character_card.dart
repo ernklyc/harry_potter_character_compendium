@@ -7,6 +7,7 @@ import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dar
 import 'package:harry_potter_character_compendium/features/characters/data/models/character_model.dart';
 import 'package:harry_potter_character_compendium/features/favorites/domain/providers/favorite_providers.dart';
 import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class CharacterCard extends ConsumerWidget {
   final Character character;
@@ -20,27 +21,31 @@ class CharacterCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final houseColor = _getHouseColor(character.house);
     final houseAccentColor = _getHouseAccentColor(character.house);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = theme.brightness == Brightness.dark;
 
     final favoriteIds = ref.watch(favoriteCharactersProvider);
     final isFavorite = favoriteIds.contains(character.id);
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      elevation: AppDimensions.cardElevation,
+      elevation: AppDimensions.cardElevation - 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         side: BorderSide(
-          color: houseColor,
-          width: AppDimensions.cardBorderWidth + 0.5,
+          color: houseColor.withOpacity(0.7),
+          width: AppDimensions.cardBorderWidth,
         ),
       ),
       child: InkWell(
         onTap: onTap,
+        splashColor: houseColor.withOpacity(0.2),
+        highlightColor: houseColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         child: Stack(
+          fit: StackFit.expand,
           children: [
             Positioned.fill(
               child: Hero(
@@ -49,45 +54,72 @@ class CharacterCard extends ConsumerWidget {
                     ? CachedNetworkImage(
                         imageUrl: character.image!,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[300]),
-                        errorWidget: (context, url, error) => Container(
-                          color: Colors.grey[300],
-                          child: Icon(Icons.person, size: AppDimensions.iconSizeExtraLarge * 2, color: Colors.grey[600]),
+                        placeholder: (context, url) => Container(
+                           decoration: BoxDecoration(
+                             gradient: LinearGradient(
+                               colors: [houseColor.withOpacity(0.1), houseColor.withOpacity(0.3)],
+                               begin: Alignment.topLeft,
+                               end: Alignment.bottomRight,
+                              )
+                           )
                         ),
+                        errorWidget: (context, url, error) => Container(
+                          color: theme.colorScheme.surfaceVariant,
+                          child: Icon(Icons.broken_image_outlined, size: AppDimensions.iconSizeExtraLarge, color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5)),
+                        ),
+                        fadeInDuration: 300.ms,
                       )
                     : Container(
-                        color: Colors.grey[300],
-                        child: Icon(Icons.person, size: AppDimensions.iconSizeExtraLarge * 2, color: Colors.grey[600]),
+                        decoration: BoxDecoration(
+                           gradient: LinearGradient(
+                             colors: [houseColor.withOpacity(0.2), houseColor.withOpacity(0.4)],
+                             begin: Alignment.topLeft,
+                             end: Alignment.bottomRight,
+                            )
+                        ),
+                        child: Icon(Icons.person_outline, size: AppDimensions.iconSizeExtraLarge * 1.5, color: houseAccentColor.withOpacity(0.6)),
                       ),
               ),
             ),
             Positioned(
-              top: AppDimensions.paddingExtraSmall,
-              left: AppDimensions.paddingExtraSmall,
+              top: AppDimensions.paddingSmall - 2,
+              left: AppDimensions.paddingSmall - 2,
               child: Material(
-                color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
                   onTap: () {
                     ref.read(favoriteCharactersProvider.notifier).toggleFavorite(character.id);
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppDimensions.paddingSmall - 2),
+                  splashColor: AppTheme.favoriteRed.withOpacity(0.3),
+                  highlightColor: AppTheme.favoriteRed.withOpacity(0.15),
+                  child: Container(
+                    padding: const EdgeInsets.all(AppDimensions.paddingSmall - 1),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withOpacity(0.4),
+                      boxShadow: isFavorite ? [
+                        BoxShadow(
+                          color: AppTheme.favoriteRed.withOpacity(0.5),
+                          blurRadius: 5.0,
+                          spreadRadius: 1.0,
+                        )
+                      ] : null,
+                    ),
                     child: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                       color: isFavorite ? AppTheme.favoriteRed : Colors.white.withOpacity(0.9),
-                      size: AppDimensions.iconSizeMedium,
-                      shadows: isFavorite ? [Shadow(blurRadius: 3.0, color: AppTheme.favoriteRed.withOpacity(0.7))] : null,
+                      size: AppDimensions.iconSizeMedium + 2,
                     ),
                   ),
                 ),
               ),
             ),
             Positioned(
-              bottom: AppDimensions.paddingZero,
-              left: AppDimensions.paddingZero,
-              right: AppDimensions.paddingZero,
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall),
                 decoration: BoxDecoration(
@@ -112,11 +144,14 @@ class CharacterCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (character.house.isNotEmpty)
-                      Text(
-                        character.house,
-                        style: AppTextStyles.cardSubtitle.copyWith(color: houseAccentColor.withOpacity(isDark ? 1.0 : 0.9), fontSize: 13),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppDimensions.paddingExtraSmall / 2),
+                        child: Text(
+                          character.house,
+                          style: AppTextStyles.cardSubtitle.copyWith(color: houseAccentColor.withOpacity(isDark ? 1.0 : 0.9), fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                   ],
                 ),
@@ -129,12 +164,12 @@ class CharacterCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (character.hogwartsStudent)
-                    _buildInfoChip(context, AppStrings.charactersTabStudents, Icons.school, houseColor, isDark),
+                    _buildInfoChip(context, AppStrings.charactersTabStudents, Icons.school_outlined, houseColor, isDark),
                   if (character.hogwartsStaff)
-                    _buildInfoChip(context, AppStrings.charactersTabStaff, Icons.work, houseColor, isDark),
+                    _buildInfoChip(context, AppStrings.charactersTabStaff, Icons.work_outline, houseColor, isDark),
                   if (character.wizard && !character.hogwartsStudent && !character.hogwartsStaff)
-                    _buildInfoChip(context, AppStrings.characterIsWizard, Icons.star, houseColor, isDark),
-                ],
+                    _buildInfoChip(context, AppStrings.characterIsWizard, Icons.star_border_purple500_outlined, houseColor, isDark),
+                ].animate(interval: 100.ms).fadeIn(duration: 200.ms).slideX(begin: 0.2),
               )
             )
           ],
@@ -144,34 +179,43 @@ class CharacterCard extends ConsumerWidget {
   }
 
   Widget _buildInfoChip(BuildContext context, String label, IconData icon, Color bgColor, bool isDark) {
-    final chipColor = isDark ? bgColor.withOpacity(0.8) : bgColor;
+    final chipBgColor = isDark ? bgColor.withOpacity(0.8) : bgColor.withOpacity(0.9);
     final theme = Theme.of(context);
-    final textColor = ThemeData.estimateBrightnessForColor(chipColor) == Brightness.dark
-        ? theme.colorScheme.onPrimary.withOpacity(0.9)
-        : theme.colorScheme.onSurface.withOpacity(0.8);
+    final textColor = ThemeData.estimateBrightnessForColor(chipBgColor) == Brightness.dark
+        ? Colors.white.withOpacity(0.95)
+        : Colors.black.withOpacity(0.8);
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppDimensions.paddingExtraSmall),
       padding: AppDimensions.chipPadding,
       decoration: BoxDecoration(
-        color: chipColor,
+        color: chipBgColor,
         borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+        border: Border.all(
+           color: Colors.white.withOpacity(isDark ? 0.2 : 0.5),
+           width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.2),
-            blurRadius: 2,
-            offset: const Offset(1, 1),
+            color: theme.colorScheme.shadow.withOpacity(0.25),
+            blurRadius: 3,
+            offset: const Offset(1, 2),
           )
         ]
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: AppDimensions.iconSizeExtraSmall, color: textColor),
+          Icon(icon, size: AppDimensions.iconSizeExtraSmall + 1, color: textColor),
           const SizedBox(width: AppDimensions.paddingExtraSmall),
           Text(
             label,
-            style: AppTextStyles.bodySmall(context).copyWith(fontSize: 11, fontWeight: FontWeight.bold, color: textColor),
+            style: AppTextStyles.bodySmall(context).copyWith(
+               fontSize: 11.5,
+               fontWeight: FontWeight.bold,
+               color: textColor,
+               letterSpacing: 0.2
+            ),
           ),
         ],
       ),

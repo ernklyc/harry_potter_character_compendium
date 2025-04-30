@@ -15,6 +15,7 @@ import 'package:harry_potter_character_compendium/features/spells/domain/provide
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_card.dart';
 import 'package:harry_potter_character_compendium/features/spells/presentation/widgets/spell_list_shimmer.dart';
 import 'package:harry_potter_character_compendium/features/favorites/domain/providers/favorite_providers.dart';
+// import 'package:harry_potter_character_compendium/core/theme/app_theme.dart'; // Bu artık gerekli değilse kaldırılabilir
 
 class ProfileScreen extends HookConsumerWidget {
   const ProfileScreen({super.key});
@@ -43,16 +44,29 @@ class ProfileScreen extends HookConsumerWidget {
     final favoriteCharacterIds = ref.watch(favoriteCharactersProvider);
     final favoriteSpellIds = ref.watch(favoriteSpellsProvider);
     
+    // final theme = Theme.of(context); // Artık AppBar'da kullanılmıyor
+    
     return Scaffold(
       appBar: AppBar(
+        // Stil kaldırıldı, varsayılan AppBar stili kullanılacak
         title: Text(AppStrings.favoritesTitle),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(78.0),
+          // Orijinal yükseklik değeri kullanıldı (veya tema varsayılanı)
+          preferredSize: const Size.fromHeight(kToolbarHeight - 10), // Yaklaşık eski değer
+          // Arka plan ve kenarlık kaldırıldı
           child: TabBar(
             controller: tabController,
-            labelPadding: EdgeInsets.zero,
-            indicatorPadding: EdgeInsets.zero,
+            // Stiller kaldırıldı, varsayılan TabBar stili kullanılacak
+            // labelStyle: AppTextStyles.tabLabel.copyWith(fontSize: 13.5),
+            // unselectedLabelStyle: AppTextStyles.tabLabel.copyWith(fontSize: 13),
+            // indicator: BoxDecoration(...),
+            // indicatorPadding: ..., 
+            // labelColor: ..., 
+            // unselectedLabelColor: ..., 
+            labelPadding: EdgeInsets.zero, // Eski padding değeri
+            indicatorPadding: EdgeInsets.zero, // Eski padding değeri
             tabs: [
+              // _buildTab yerine orijinal Tab widget'ları kullanıldı
               Tab(
                 text: AppStrings.favoritesTabCharacters,
                 icon: Icon(Icons.person_outline, size: 20.0),
@@ -64,6 +78,9 @@ class ProfileScreen extends HookConsumerWidget {
             ],
           ),
         ),
+        // elevation ve backgroundColor kaldırıldı, tema varsayılanları kullanılacak
+        // elevation: 0,
+        // backgroundColor: theme.scaffoldBackgroundColor,
       ),
       body: TabBarView(
         controller: tabController,
@@ -75,6 +92,23 @@ class ProfileScreen extends HookConsumerWidget {
     );
   }
 
+  // _buildTab fonksiyonu artık kullanılmadığı için kaldırılabilir veya yorum satırı yapılabilir
+  /*
+  Widget _buildTab(String text, IconData icon) {
+    return Tab(
+      height: kToolbarHeight, 
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: AppDimensions.iconSizeMedium),
+          const SizedBox(width: AppDimensions.paddingSmall),
+          Flexible(child: Text(text, overflow: TextOverflow.ellipsis)),
+        ],
+      ),
+    );
+  }
+  */
+
   Widget _buildFavoriteCharacters(BuildContext context, WidgetRef ref, Set<String> favoriteCharacterIds) {
     final allCharactersAsync = ref.watch(allCharactersProvider);
 
@@ -85,7 +119,11 @@ class ProfileScreen extends HookConsumerWidget {
             .toList();
 
         if (favoriteCharacters.isEmpty) {
-          return _buildEmptyFavoritesView(context, AppStrings.favoritesEmptyCharacters);
+          return _buildEmptyFavoritesView(
+            context,
+            AppStrings.favoritesEmptyCharacters,
+            Icons.person_off_outlined,
+          );
         }
 
         return GridView.builder(
@@ -93,6 +131,7 @@ class ProfileScreen extends HookConsumerWidget {
           padding: const EdgeInsets.all(AppDimensions.paddingMedium),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
+            // Orijinal oran ve boşluklar
             childAspectRatio: 0.75,
             crossAxisSpacing: AppDimensions.paddingMedium,
             mainAxisSpacing: AppDimensions.paddingMedium,
@@ -132,11 +171,16 @@ class ProfileScreen extends HookConsumerWidget {
             .toList();
 
         if (favoriteSpells.isEmpty) {
-          return _buildEmptyFavoritesView(context, AppStrings.favoritesEmptySpells);
+          return _buildEmptyFavoritesView(
+            context,
+            AppStrings.favoritesEmptySpells,
+            Icons.bookmark_remove_outlined,
+          );
         }
 
         return ListView.builder(
           key: const PageStorageKey('fav_spells_list'),
+          // Orijinal padding
           padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingMedium, horizontal: AppDimensions.paddingSmall),
           itemCount: favoriteSpells.length,
           itemBuilder: (context, index) {
@@ -153,23 +197,39 @@ class ProfileScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildEmptyFavoritesView(BuildContext context, String message) {
+  Widget _buildEmptyFavoritesView(BuildContext context, String message, IconData iconData) {
+    final theme = Theme.of(context);
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.favorite_border,
-            size: AppDimensions.iconSizeExtraLarge * 2.5,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-          ),
-          const SizedBox(height: AppDimensions.paddingLarge),
-          Text(
-            message,
-            style: AppTextStyles.emptyListText(context),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: SingleChildScrollView(
+        padding: AppDimensions.pagePadding,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              // Orijinal ikona daha yakın bir ikon
+              Icons.favorite_border,
+              size: AppDimensions.iconSizeExtraLarge * 2.5,
+              color: theme.colorScheme.onSurface.withOpacity(0.4),
+            ),
+            const SizedBox(height: AppDimensions.paddingLarge),
+            Text(
+              message,
+              style: AppTextStyles.emptyListText(context),
+              textAlign: TextAlign.center,
+            ),
+            // Ekstra metin kaldırıldı
+            /*
+            const SizedBox(height: AppDimensions.paddingMedium),
+            Text(
+              'Henüz favori eklemedin. Karakterleri veya büyüleri keşfederken ⭐ veya 🔖 ikonuna dokunarak favorilerine ekleyebilirsin.',
+              style: AppTextStyles.bodySmall(context).copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            */
+          ],
+        ),
       ),
     );
   }

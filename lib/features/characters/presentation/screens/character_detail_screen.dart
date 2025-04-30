@@ -19,7 +19,7 @@ class CharacterDetailScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  _CharacterDetailScreenState createState() => _CharacterDetailScreenState();
+  ConsumerState<CharacterDetailScreen> createState() => _CharacterDetailScreenState();
 }
 
 class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
@@ -42,7 +42,6 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
     }
   }
 
-  // Bu fonksiyonlar artık doğrudan AppTheme'den alınabilir veya burada kalabilir
   Color _getHouseColor(String house) {
     switch (house.toLowerCase()) {
       case 'gryffindor': return AppTheme.gryffindorPrimary;
@@ -87,21 +86,24 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 380.0, // Bu değer de dimensions'a taşınabilir
+                expandedHeight: 380.0,
                 pinned: true,
                 floating: false,
                 stretch: true,
-                elevation: AppDimensions.paddingZero, // Sabit kullanıldı
+                elevation: 0.0,
                 backgroundColor: primaryColor,
-                iconTheme: const IconThemeData(color: Colors.white),
+                iconTheme: const IconThemeData(color: Colors.white, size: AppDimensions.iconSizeLarge),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
-                  // Padding için sabit kullanıldı
-                  titlePadding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingExtraLarge * 2, vertical: AppDimensions.paddingLarge),
+                  titlePadding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge * 1.5, vertical: AppDimensions.paddingMedium),
                   title: Text(
                     character.name,
-                    // AppTextStyles içindeki stil kullanıldı
-                    style: AppTextStyles.cardTitleLarge.copyWith(shadows: [], fontSize: 20), // Gölge kaldırıldı, boyut ayarlandı
+                    style: AppTextStyles.screenTitle.copyWith(
+                       color: Colors.white,
+                       shadows: [
+                          Shadow(color: Colors.black.withOpacity(0.5), blurRadius: 3, offset: const Offset(1,1))
+                       ]
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   background: Stack(
@@ -114,11 +116,20 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
                                 imageUrl: character.image!,
                                 fit: BoxFit.cover,
                                 alignment: Alignment.topCenter,
-                                placeholder: (context, url) => Container(color: primaryColor.withOpacity(0.5)),
-                                errorWidget: (context, url, error) => Container(
-                                  color: primaryColor.withOpacity(0.5),
-                                  child: Icon(Icons.person, size: 150, color: Colors.white.withOpacity(0.7)),
+                                placeholder: (context, url) => Container(
+                                  decoration: BoxDecoration(
+                                     gradient: LinearGradient(
+                                       colors: [primaryColor.withOpacity(0.2), primaryColor.withOpacity(0.5)],
+                                       begin: Alignment.topLeft, end: Alignment.bottomRight
+                                     )
+                                  ),
+                                  child: const Center(child: CircularProgressIndicator(color: Colors.white70)),
                                 ),
+                                errorWidget: (context, url, error) => Container(
+                                  color: primaryColor.withOpacity(0.3),
+                                  child: Icon(Icons.person, size: 150, color: Colors.white.withOpacity(0.5)),
+                                ),
+                                fadeInDuration: 400.ms,
                               )
                             : Container(
                                 color: primaryColor.withOpacity(0.5),
@@ -132,10 +143,10 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.1),
-                              primaryColor.withOpacity(0.7),
+                              primaryColor.withOpacity(0.3),
+                              primaryColor.withOpacity(0.8),
                             ],
-                            stops: const [0.4, 0.7, 1.0],
+                            stops: const [0.3, 0.6, 1.0],
                           ),
                         ),
                       ),
@@ -145,89 +156,12 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
                 ),
               ),
               SliverPadding(
-                // Padding için sabit kullanıldı
-                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingPageHorizontal, vertical: AppDimensions.paddingPageVertical),
+                padding: AppDimensions.pagePadding,
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    _buildInfoSection(
-                      context,
-                      AppStrings.characterInfoBasic,
-                      primaryColor,
-                      accentColor,
-                      [
-                        if (character.alternateNames.isNotEmpty) _buildInfoRow(context, Icons.theater_comedy, AppStrings.characterAlternateNames, character.alternateNames.join(", "), accentColor),
-                        if (character.house.isNotEmpty) _buildInfoRow(context, Icons.home_filled, AppStrings.characterHouse, character.house, accentColor),
-                        if (character.species.isNotEmpty) _buildInfoRow(context, Icons.pets, AppStrings.characterSpecies, character.species, accentColor),
-                        if (character.gender.isNotEmpty) _buildInfoRow(context, Icons.transgender, AppStrings.characterGender, character.gender, accentColor),
-                        if (character.dateOfBirth != null) _buildInfoRow(context, Icons.cake, AppStrings.characterDob, character.dateOfBirth!, accentColor),
-                        if (character.yearOfBirth != null) _buildInfoRow(context, Icons.calendar_today, AppStrings.characterYob, character.yearOfBirth.toString(), accentColor),
-                        _buildInfoRow(context, Icons.auto_awesome, AppStrings.characterIsWizard, character.wizard ? AppStrings.yes : AppStrings.no, accentColor),
-                        if (character.ancestry.isNotEmpty) _buildInfoRow(context, Icons.bloodtype, AppStrings.characterAncestry, character.ancestry, accentColor),
-                        _buildInfoRow(context, Icons.favorite, AppStrings.characterIsAlive, character.alive ? AppStrings.yes : AppStrings.no, accentColor),
-                      ],
-                    ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.1),
-
-                    if (character.eyeColour.isNotEmpty || character.hairColour.isNotEmpty)
-                      _buildInfoSection(
-                        context,
-                        AppStrings.characterInfoPhysical,
-                        primaryColor,
-                        accentColor,
-                        [
-                          if (character.eyeColour.isNotEmpty) _buildInfoRow(context, Icons.visibility, AppStrings.characterEyeColor, character.eyeColour, accentColor),
-                          if (character.hairColour.isNotEmpty) _buildInfoRow(context, Icons.brush, AppStrings.characterHairColor, character.hairColour, accentColor),
-                        ],
-                      ).animate().fadeIn(delay: 300.ms).slideX(begin: 0.1),
-
-                    if (character.wand != null && (character.wand!.wood.isNotEmpty || character.wand!.core.isNotEmpty || character.wand!.length != null))
-                      _buildInfoSection(
-                        context,
-                        AppStrings.characterInfoWand,
-                        primaryColor,
-                        accentColor,
-                        [
-                          if (character.wand!.wood.isNotEmpty) _buildInfoRow(context, Icons.park_outlined, AppStrings.characterWandWood, character.wand!.wood, accentColor),
-                          if (character.wand!.core.isNotEmpty) _buildInfoRow(context, Icons.flash_on_outlined, AppStrings.characterWandCore, character.wand!.core, accentColor),
-                          if (character.wand!.length != null) _buildInfoRow(context, Icons.straighten_outlined, AppStrings.characterWandLength, '${character.wand!.length} ${AppStrings.inchUnit}', accentColor),
-                        ],
-                      ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
-
-                    if (character.patronus.isNotEmpty)
-                      _buildInfoSection(
-                        context,
-                        AppStrings.characterInfoPatronus,
-                        primaryColor,
-                        accentColor,
-                        [
-                          _buildInfoRow(context, Icons.shield_moon_outlined, AppStrings.characterPatronusLabel, character.patronus, accentColor),
-                        ],
-                      ).animate().fadeIn(delay: 500.ms).slideX(begin: 0.1),
-
-                    _buildInfoSection(
-                      context,
-                      AppStrings.characterInfoHogwarts,
-                      primaryColor,
-                      accentColor,
-                      [
-                        _buildInfoRow(context, Icons.school, AppStrings.characterIsStudent, character.hogwartsStudent ? AppStrings.yes : AppStrings.no, accentColor),
-                        _buildInfoRow(context, Icons.work, AppStrings.characterIsStaff, character.hogwartsStaff ? AppStrings.yes : AppStrings.no, accentColor),
-                      ],
-                    ).animate().fadeIn(delay: 600.ms).slideX(begin: -0.1),
-
-                    if (character.actor.isNotEmpty || character.alternateActors.isNotEmpty)
-                      _buildInfoSection(
-                        context,
-                        AppStrings.characterInfoFilm,
-                        primaryColor,
-                        accentColor,
-                        [
-                          if (character.actor.isNotEmpty) _buildInfoRow(context, Icons.person, AppStrings.characterActor, character.actor, accentColor),
-                          if (character.alternateActors.isNotEmpty) _buildInfoRow(context, Icons.people, AppStrings.characterAlternateActors, character.alternateActors.join(", "), accentColor),
-                        ],
-                      ).animate().fadeIn(delay: 700.ms).slideX(begin: 0.1),
-
-                    // Alt boşluk için sabit kullanıldı
-                    const SizedBox(height: AppDimensions.paddingLarge), 
+                    ..._buildInfoSections(context, theme, isDark, character, primaryColor, accentColor)
+                        .animate(interval: 100.ms).fadeIn(duration: 300.ms).slideY(begin: 0.1, curve: Curves.easeOutCubic),
+                    const SizedBox(height: AppDimensions.paddingLarge),
                   ]),
                 ),
               ),
@@ -238,7 +172,7 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(),
+              const CircularProgressIndicator(color: AppTheme.goldAccent),
               const SizedBox(height: AppDimensions.paddingLarge),
               Text(
                AppStrings.characterDetailsLoading,
@@ -255,62 +189,121 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
     );
   }
 
-  Widget _buildInfoSection(BuildContext context, String title, Color primaryColor, Color accentColor, List<Widget> children) {
+  List<Widget> _buildInfoSections(BuildContext context, ThemeData theme, bool isDark, Character character, Color primaryColor, Color accentColor) {
+    return [
+       if (character.alternateNames.isNotEmpty || character.house.isNotEmpty || character.species.isNotEmpty || character.gender.isNotEmpty || character.dateOfBirth != null || character.yearOfBirth != null || character.ancestry.isNotEmpty)
+         _buildInfoSection(
+          context, theme, isDark, AppStrings.characterInfoBasic, primaryColor, accentColor,
+           [
+             if (character.alternateNames.isNotEmpty) _buildInfoRow(context, theme, Icons.theater_comedy, AppStrings.characterAlternateNames, character.alternateNames.join(", "), accentColor),
+             if (character.house.isNotEmpty) _buildInfoRow(context, theme, Icons.fort_outlined, AppStrings.characterHouse, character.house, accentColor),
+             if (character.species.isNotEmpty) _buildInfoRow(context, theme, Icons.pets_outlined, AppStrings.characterSpecies, character.species, accentColor),
+             if (character.gender.isNotEmpty) _buildInfoRow(context, theme, Icons.transgender_outlined, AppStrings.characterGender, character.gender, accentColor),
+             if (character.dateOfBirth != null) _buildInfoRow(context, theme, Icons.cake_outlined, AppStrings.characterDob, character.dateOfBirth!, accentColor),
+             if (character.yearOfBirth != null) _buildInfoRow(context, theme, Icons.calendar_today_outlined, AppStrings.characterYob, character.yearOfBirth.toString(), accentColor),
+             _buildInfoRow(context, theme, Icons.auto_awesome_outlined, AppStrings.characterIsWizard, character.wizard ? AppStrings.yes : AppStrings.no, accentColor),
+             if (character.ancestry.isNotEmpty) _buildInfoRow(context, theme, Icons.bloodtype_outlined, AppStrings.characterAncestry, character.ancestry, accentColor),
+             _buildInfoRow(context, theme, character.alive ? Icons.favorite_outlined : Icons.heart_broken_outlined, AppStrings.characterIsAlive, character.alive ? AppStrings.yes : AppStrings.no, accentColor),
+           ],
+         ),
+
+       if (character.eyeColour.isNotEmpty || character.hairColour.isNotEmpty)
+         _buildInfoSection(
+           context, theme, isDark, AppStrings.characterInfoPhysical, primaryColor, accentColor,
+           [
+             if (character.eyeColour.isNotEmpty) _buildInfoRow(context, theme, Icons.visibility_outlined, AppStrings.characterEyeColor, character.eyeColour, accentColor),
+             if (character.hairColour.isNotEmpty) _buildInfoRow(context, theme, Icons.brush_outlined, AppStrings.characterHairColor, character.hairColour, accentColor),
+           ],
+         ),
+
+       if (character.wand != null && (character.wand!.wood.isNotEmpty || character.wand!.core.isNotEmpty || character.wand!.length != null))
+         _buildInfoSection(
+           context, theme, isDark, AppStrings.characterInfoWand, primaryColor, accentColor,
+           [
+             if (character.wand!.wood.isNotEmpty) _buildInfoRow(context, theme, Icons.park_outlined, AppStrings.characterWandWood, character.wand!.wood, accentColor),
+             if (character.wand!.core.isNotEmpty) _buildInfoRow(context, theme, Icons.flare_outlined, AppStrings.characterWandCore, character.wand!.core, accentColor),
+             if (character.wand!.length != null) _buildInfoRow(context, theme, Icons.straighten_outlined, AppStrings.characterWandLength, '${character.wand!.length} ${AppStrings.inchUnit}', accentColor),
+           ],
+         ),
+
+       if (character.patronus.isNotEmpty)
+         _buildInfoSection(
+           context, theme, isDark, AppStrings.characterInfoPatronus, primaryColor, accentColor,
+           [
+             _buildInfoRow(context, theme, Icons.shield_moon_outlined, AppStrings.characterPatronusLabel, character.patronus, accentColor),
+           ],
+         ),
+
+       if (character.hogwartsStudent || character.hogwartsStaff)
+         _buildInfoSection(
+           context, theme, isDark, AppStrings.characterInfoHogwarts, primaryColor, accentColor,
+           [
+             _buildInfoRow(context, theme, Icons.school_outlined, AppStrings.characterIsStudent, character.hogwartsStudent ? AppStrings.yes : AppStrings.no, accentColor),
+             _buildInfoRow(context, theme, Icons.work_outline, AppStrings.characterIsStaff, character.hogwartsStaff ? AppStrings.yes : AppStrings.no, accentColor),
+           ],
+         ),
+
+       if (character.actor.isNotEmpty || character.alternateActors.isNotEmpty)
+         _buildInfoSection(
+           context, theme, isDark, AppStrings.characterInfoFilm, primaryColor, accentColor,
+           [
+             if (character.actor.isNotEmpty) _buildInfoRow(context, theme, Icons.person_outline, AppStrings.characterActor, character.actor, accentColor),
+             if (character.alternateActors.isNotEmpty) _buildInfoRow(context, theme, Icons.people_outline, AppStrings.characterAlternateActors, character.alternateActors.join(", "), accentColor),
+           ],
+         ),
+    ];
+  }
+
+  Widget _buildInfoSection(BuildContext context, ThemeData theme, bool isDark, String title, Color primaryColor, Color accentColor, List<Widget> children) {
     final validChildren = children.where((w) => w is! SizedBox || (w.height == null)).toList();
     if (validChildren.isEmpty) return const SizedBox.shrink();
     
-    final theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
-    final sectionBgColor = primaryColor.withOpacity(isDark ? 0.1 : 0.04);
+    final sectionBgColor = primaryColor.withOpacity(isDark ? 0.08 : 0.05);
 
     return Container(
-      // Margin için sabit kullanıldı
-      margin: const EdgeInsets.symmetric(vertical: AppDimensions.paddingMedium),
-      // Padding için sabit kullanıldı
-      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge, vertical: AppDimensions.paddingLarge - 2), // Biraz daha az dikey padding
+      margin: const EdgeInsets.symmetric(vertical: AppDimensions.paddingSmall + 2),
+      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge, vertical: AppDimensions.paddingMedium),
       decoration: BoxDecoration(
         color: sectionBgColor,
-        // Radius için sabit kullanıldı
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
         border: Border.all( 
-          color: accentColor.withOpacity(isDark ? 0.5 : 0.3),
-          // Border width için sabit kullanıldı
-          width: AppDimensions.cardBorderWidth, 
+          color: accentColor.withOpacity(isDark ? 0.3 : 0.2),
+          width: AppDimensions.cardBorderWidth - 0.5,
         ),
+         boxShadow: [
+           BoxShadow(
+             color: theme.shadowColor.withOpacity(0.05),
+             blurRadius: 5,
+             offset: const Offset(0, 2),
+           )
+         ]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            // AppTextStyles içindeki stil kullanıldı
-            style: AppTextStyles.sectionTitle.copyWith(color: accentColor), 
+            style: AppTextStyles.sectionTitle.copyWith(color: accentColor, fontSize: 18),
           ),
-          // Boşluk için sabit kullanıldı
-          const SizedBox(height: AppDimensions.paddingSmall + 2),
+          const SizedBox(height: AppDimensions.paddingSmall),
           ...validChildren,
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String label, String value, Color accentColor) {
-    final theme = Theme.of(context);
-    // AppTextStyles içindeki stiller kullanıldı
-    final labelStyle = AppTextStyles.detailLabel.copyWith(color: accentColor);
+  Widget _buildInfoRow(BuildContext context, ThemeData theme, IconData icon, String label, String value, Color accentColor) {
+    final labelStyle = AppTextStyles.detailLabel.copyWith(color: accentColor.withOpacity(0.9));
     final valueStyle = AppTextStyles.detailValue(context);
 
     if (value.isEmpty || value == 'null') return const SizedBox.shrink();
 
     return Padding(
-      // Padding için sabit kullanıldı
-      padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingSmall - 1), 
+      padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingSmall),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // İkon boyutu ve rengi için sabitler kullanıldı
-          Icon(icon, size: AppDimensions.iconSizeMedium - 2, color: accentColor.withOpacity(0.9)), 
-          // Boşluk için sabit kullanıldı
+          Icon(icon, size: AppDimensions.iconSizeMedium, color: accentColor.withOpacity(0.8)),
           const SizedBox(width: AppDimensions.paddingMedium),
           Expanded(
             child: RichText(

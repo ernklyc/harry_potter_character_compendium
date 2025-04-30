@@ -92,160 +92,158 @@ class SpellsScreen extends HookConsumerWidget {
       return spells.where((spell) => filters.matchesSpell(spell)).toList();
     }
 
-    void clearFilters() {
+    void clearSearch() {
       ref.read(spellFiltersProvider.notifier).state = SpellFilters();
       searchController.clear();
-      // Arama çubuğu açıksa kapatılabilir (isteğe bağlı)
-      // showSearchBar.value = false; 
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: showSearchBar.value
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back, size: AppDimensions.iconSizeLarge),
-                onPressed: () {
-                  showSearchBar.value = false;
-                  // Arama çubuğu kapandığında filtreleri temizle
-                  clearFilters(); 
-                },
-              )
-            : null,
-        title: showSearchBar.value
+    void toggleSearchBar() {
+       final willShow = !showSearchBar.value;
+       showSearchBar.value = willShow;
+       if (!willShow) {
+         // Arama çubuğu kapanıyorsa, aramayı temizle
+         clearSearch();
+       }
+    }
+
+    // AppBar'ı ayrı bir widget olarak oluşturabiliriz veya burada bırakabiliriz.
+    final appBar = AppBar(
+      leading: showSearchBar.value
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, size: AppDimensions.iconSizeLarge), // Daha modern ikon
+              tooltip: 'Geri', // Doğrudan metin kullanıldı
+              onPressed: toggleSearchBar, // Fonksiyonu kullan
+            )
+          : null,
+      title: AnimatedSwitcher(
+        duration: 300.ms,
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        child: showSearchBar.value
             ? TextField(
-                controller: searchController, // Hook'tan gelen controller
-                style: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white),
+                key: const ValueKey('SearchBar'), // Animasyon için anahtar
+                controller: searchController,
+                style: AppTextStyles.bodyRegular(context).copyWith(color: theme.colorScheme.onPrimary, fontSize: 18), // Düzeltildi: Stil ayarlandı
                 autofocus: true,
                 cursorColor: AppTheme.goldAccent,
                 decoration: InputDecoration(
                   hintText: AppStrings.spellsSearchHint,
                   border: InputBorder.none,
-                  hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
-                  // suffixIcon state'e göre yönetiliyor
+                  hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: theme.colorScheme.onPrimary.withOpacity(0.6), fontSize: 18), // Düzeltildi: Stil ayarlandı
                   suffixIcon: searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: theme.colorScheme.onPrimary.withOpacity(0.7), size: AppDimensions.iconSizeMedium),
-                          onPressed: () => searchController.clear(),
+                          icon: Icon(Icons.clear_rounded, color: theme.colorScheme.onPrimary.withOpacity(0.8), size: AppDimensions.iconSizeMedium),
+                          tooltip: 'Temizle', // Doğrudan metin kullanıldı
+                          onPressed: clearSearch, // Sadece metni temizle
                         )
                       : null,
                 ),
               )
             : Text(
-                AppStrings.spellsTitle,
-              ),
-        actions: [
-          Container(
-            decoration: BoxDecoration(
-              color: showSearchBar.value // useState değeri kullanılıyor
-                  ? Colors.white.withOpacity(0.15)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-            ),
-            child: IconButton(
-              icon: Icon(
-                showSearchBar.value ? Icons.clear : Icons.search, // useState değeri
-                color: showSearchBar.value ? AppTheme.goldAccent : theme.colorScheme.onPrimary,
-                size: AppDimensions.iconSizeLarge,
-              ),
-              onPressed: () {
-                showSearchBar.value = !showSearchBar.value;
-                // Arama çubuğu kapatıldığında filtreleri temizle
-                if (!showSearchBar.value) {
-                  clearFilters();
-                }
-              },
-            ),
-          ),
-          // Aktif filtreler varsa temizleme butonu
-          if (filters.hasFilters())
-            Container(
-              margin: const EdgeInsets.only(right: AppDimensions.paddingSmall),
-              decoration: BoxDecoration(
-                color: AppTheme.goldAccent.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                border: Border.all(
-                  color: AppTheme.goldAccent.withOpacity(0.5),
-                  width: 1,
-                ),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.clear_all,
-                  color: theme.colorScheme.onPrimary,
-                  size: AppDimensions.iconSizeLarge,
-                ),
-                onPressed: clearFilters, // Temizleme fonksiyonunu kullan
-                tooltip: AppStrings.spellsClearFilters,
-              ),
-            ),
-        ],
+                 key: const ValueKey('Title'), // Animasyon için anahtar
+                 AppStrings.spellsTitle,
+                 style: AppTextStyles.screenTitle, // Tema stilini kullan
+               ),
       ),
+      actions: [
+        // Arama Butonu
+        Padding(
+          padding: const EdgeInsets.only(right: AppDimensions.paddingSmall), // Sağ boşluk
+          child: IconButton(
+            icon: Icon(
+              showSearchBar.value ? Icons.close_rounded : Icons.search_rounded, // Daha modern ikonlar
+              color: theme.colorScheme.onPrimary,
+              size: AppDimensions.iconSizeLarge + 2,
+            ),
+            tooltip: showSearchBar.value ? 'Kapat' : 'Ara', // Doğrudan metin kullanıldı
+            style: IconButton.styleFrom(
+               backgroundColor: showSearchBar.value ? AppTheme.goldAccent.withOpacity(0.2) : Colors.transparent,
+               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusSmall))
+            ),
+            onPressed: toggleSearchBar, // Fonksiyonu kullan
+          ),
+        ),
+      ],
+      // AppBar alt gölgesi (opsiyonel)
+      // elevation: showSearchBar.value ? 0 : AppBarTheme.of(context).elevation,
+    );
+
+    return Scaffold(
+      appBar: appBar,
       body: allSpellsAsync.when(
         data: (spells) {
-          final filteredSpells = filterSpells(spells); // filterSpells fonksiyonu kullanılıyor
-          
+          final filteredSpells = filterSpells(spells);
+
           if (filteredSpells.isEmpty) {
             return RefreshIndicator(
               onRefresh: () => ref.refresh(allSpellsProvider.future),
-              child: Center(
-                child: Padding(
-                  padding: AppDimensions.pagePadding.copyWith(top: 0, bottom: 0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.auto_fix_off,
-                        size: AppDimensions.iconSizeExtraLarge * 2,
-                        color: AppTheme.goldAccent.withOpacity(0.6),
-                      ),
-                      const SizedBox(height: AppDimensions.paddingLarge),
-                      Text(
-                        filters.hasFilters()
-                            ? AppStrings.spellsSearchNotFound
-                            : AppStrings.spellsNotFound,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.emptyListText(context),
-                      ),
-                      if (filters.hasFilters()) ...[
-                        const SizedBox(height: AppDimensions.paddingMedium),
-                        ElevatedButton.icon(
-                          onPressed: clearFilters, // Temizleme fonksiyonunu kullan
-                          icon: const Icon(Icons.clear_all, size: AppDimensions.iconSizeMedium),
-                          label: Text(AppStrings.spellsClearFilters),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.gryffindorPrimary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge, vertical: AppDimensions.paddingSmall),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                              side: const BorderSide(
-                                color: AppTheme.goldAccent,
-                                width: 1,
-                              ),
-                            ),
+              color: AppTheme.goldAccent,
+              backgroundColor: theme.colorScheme.primary,
+              child: ListView( // Kaydırılabilir olması için ListView içinde
+                 children: [ Center(
+                    child: Padding(
+                      padding: AppDimensions.pagePadding.copyWith(top: AppDimensions.paddingExtraLarge * 2), // Üst boşluk artırıldı
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center, // Ortala
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            filters.hasFilters() ? Icons.search_off_rounded : Icons.auto_stories_outlined, // Duruma göre ikon
+                            size: AppDimensions.iconSizeExtraLarge * 2.5,
+                            color: AppTheme.goldAccent.withOpacity(0.7),
                           ),
-                        ),
-                      ],
-                    ],
+                          const SizedBox(height: AppDimensions.paddingLarge),
+                          Text(
+                            filters.hasFilters()
+                                ? AppStrings.spellsSearchNotFound
+                                : AppStrings.spellsNotFound,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.emptyListText(context).copyWith(fontSize: 18), // Boyut ayarlandı
+                          ),
+                          if (filters.hasFilters()) ...[
+                            const SizedBox(height: AppDimensions.paddingLarge), // Boşluk artırıldı
+                            ElevatedButton.icon(
+                              onPressed: clearSearch, // Arama temizleme fonksiyonunu kullan
+                              icon: const Icon(Icons.clear_all_rounded, size: AppDimensions.iconSizeMedium),
+                              label: Text('Temizle'), // Doğrudan metin kullanıldı
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.gryffindorPrimary, // Tema rengi
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingLarge + 4, vertical: AppDimensions.paddingMedium - 2),
+                                textStyle: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold), // Düzeltildi: Tema Text Style kullanıldı
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                                  side: BorderSide(
+                                    color: AppTheme.goldAccent.withOpacity(0.8),
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ).animate().fadeIn(delay: 200.ms).scale(begin: const Offset(0.8, 0.8)), // Animasyon
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
+              ]),
             );
           }
-          
+
           return RefreshIndicator(
             onRefresh: () => ref.refresh(allSpellsProvider.future),
             color: AppTheme.goldAccent,
-            backgroundColor: AppTheme.gryffindorPrimary,
+            backgroundColor: theme.colorScheme.primary, // Tema rengi
             child: ListView.builder(
-              padding: const EdgeInsets.only(top: AppDimensions.paddingMedium, bottom: AppDimensions.paddingMedium),
+              padding: const EdgeInsets.only(top: AppDimensions.paddingSmall, bottom: AppDimensions.paddingLarge), // Padding ayarlandı
               itemCount: filteredSpells.length,
               itemBuilder: (context, index) {
                 final spell = filteredSpells[index];
                 return SpellCard(spell: spell)
                     .animate()
-                    .fadeIn(duration: 200.ms, delay: (30 * index).ms)
-                    .slideY(begin: 0.05, duration: 200.ms, curve: Curves.easeOut);
+                    // Giriş animasyonu listedeki index'e göre hafif gecikmeli
+                    .fadeIn(duration: 300.ms, delay: (50 * (index % 10)).ms)
+                    .slideY(begin: 0.1, duration: 300.ms, curve: Curves.easeOutQuart);
               },
             ),
           );
@@ -254,7 +252,7 @@ class SpellsScreen extends HookConsumerWidget {
         error: (err, stack) => RefreshIndicator(
           onRefresh: () => ref.refresh(allSpellsProvider.future),
           color: AppTheme.goldAccent,
-          backgroundColor: AppTheme.gryffindorPrimary,
+          backgroundColor: theme.colorScheme.primary,
           child: ErrorDisplay(
             message: AppStrings.spellsLoadingError,
             onRetry: () => ref.invalidate(allSpellsProvider),

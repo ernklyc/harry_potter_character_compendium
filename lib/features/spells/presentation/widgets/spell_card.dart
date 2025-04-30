@@ -28,59 +28,87 @@ class SpellCard extends ConsumerWidget {
     final isFavorite = favoriteSpellIds.contains(spell.id);
 
     return Card(
-      // elevation: 0, // Tema tarafından sağlandığı için kaldırıldı
-      margin: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall - 2),
-      // shape: Theme.of(context).cardTheme.shape ?? RoundedRectangleBorder( // Tema tarafından sağlandığı için kaldırıldı
-      //   borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-      //   side: BorderSide(color: accentColor, width: 3.0), // Border kalınlığı 3.0 yapıldı
-      // ),
-      color: cardColor, // color temada tanımlı olsa da burada override edilebilir, o yüzden kalabilir
-      child: Stack( // Stack widget'ı favori butonu için eklendi
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppDimensions.paddingLarge),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  spell.name,
-                  style: AppTextStyles.sectionTitle.copyWith(color: accentColor),
-                ),
-                const SizedBox(height: AppDimensions.paddingSmall),
-                Text(
-                  spell.description,
-                  style: AppTextStyles.bodyRegular(context).copyWith(color: defaultTextColor, height: 1.4),
-                ),
-              ],
+      margin: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall - 1), // Dikey margin azaltıldı
+      // Şekil ve kenarlık tema tarafından yönetiliyor
+      color: cardColor,
+      clipBehavior: Clip.antiAlias, // Mürekkep efektinin taşmasını önlemek için
+      child: InkWell( // Tüm karta tıklama efekti
+        onTap: () {
+           // İsteğe bağlı: Karta tıklanınca detay sayfasına gitmek için buraya kod eklenebilir.
+           // Şimdilik boş bırakıldı.
+        },
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB( // Padding düzenlendi
+                AppDimensions.paddingLarge,
+                AppDimensions.paddingLarge,
+                AppDimensions.paddingLarge + AppDimensions.paddingMedium, // Sağ padding artırıldı (buton için yer)
+                AppDimensions.paddingLarge
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row( // İkon ve Başlık için Row
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon( // Büyü ikonu
+                        Icons.auto_stories_outlined, // Veya Icons.flash_on_outlined
+                        color: accentColor.withOpacity(0.8),
+                        size: AppDimensions.iconSizeMedium + 2, // Biraz daha büyük ikon
+                      ),
+                      const SizedBox(width: AppDimensions.paddingSmall),
+                      Expanded( // Başlığın taşmasını engelle
+                        child: Text(
+                          spell.name,
+                          style: AppTextStyles.sectionTitle.copyWith(color: accentColor, fontSize: 17), // Boyut ayarlandı
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppDimensions.paddingMedium), // Başlık ve açıklama arası boşluk
+                  Text(
+                    spell.description,
+                    style: AppTextStyles.bodyRegular(context).copyWith(color: defaultTextColor, height: 1.45), // Satır yüksekliği ayarlandı
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Favori Butonu (Sağ Üst Köşe - farklı bir konum)
-          Positioned(
-            top: AppDimensions.paddingSmall,
-            right: AppDimensions.paddingSmall,
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(AppDimensions.radiusCircular),
-                onTap: () {
-                  // Favori durumunu değiştir
-                  ref.read(favoriteSpellsProvider.notifier).toggleFavorite(spell.id);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(AppDimensions.paddingSmall - 3),
-                  child: Icon(
-                    isFavorite ? Icons.bookmark : Icons.bookmark_border,
-                    color: isFavorite ? accentColor : theme.colorScheme.onSurface.withOpacity(0.5),
-                    size: AppDimensions.iconSizeMedium,
-                    shadows: isFavorite ? [Shadow(blurRadius: 3.0, color: accentColor.withOpacity(0.5))] : null,
+            // Favori Butonu
+            Positioned(
+              top: AppDimensions.paddingSmall / 2,
+              right: AppDimensions.paddingSmall / 2,
+              child: Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(), // Dairesel şekil
+                clipBehavior: Clip.antiAlias, // Dairesel kırpma
+                child: InkWell(
+                  onTap: () {
+                    ref.read(favoriteSpellsProvider.notifier).toggleFavorite(spell.id);
+                  },
+                  splashColor: accentColor.withOpacity(0.2), // Tıklama efekti rengi
+                  highlightColor: accentColor.withOpacity(0.1), // Vurgu rengi
+                  child: Padding(
+                    // Padding biraz azaltıldı
+                    padding: const EdgeInsets.all(AppDimensions.paddingSmall - 2),
+                    child: Icon(
+                      isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, // Daha dolgun ikonlar
+                      color: isFavorite ? accentColor : theme.iconTheme.color?.withOpacity(0.6), // Normal ikon rengi temadan
+                      size: AppDimensions.iconSizeMedium + 4, // Biraz daha büyük
+                      shadows: isFavorite
+                          ? [
+                              Shadow(blurRadius: 4.0, color: accentColor.withOpacity(0.6)),
+                              Shadow(blurRadius: 8.0, color: accentColor.withOpacity(0.4)),
+                            ]
+                          : null,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ).animate().fadeIn(duration: 300.ms); // Animasyon kalabilir
+    ).animate().fadeIn(duration: 350.ms).slideY(begin: 0.03, curve: Curves.easeOutCubic); // Animasyon ayarlandı
   }
 } 
