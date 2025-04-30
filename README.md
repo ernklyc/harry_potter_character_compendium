@@ -20,7 +20,7 @@ Bu Flutter uygulaması, Harry Potter evrenindeki karakterler ve büyüler hakkı
 
 Uygulamanın çeşitli ekranlarına ait görünümler:
 
-| Açılış & Karakter Listesi | Açılış & Karakter Listesi | Büyü Listesi |
+| Açılış & Karakter Listesi | Açılış & Karakter Listesi | Karakter Filtreleme |
 | :-----------------------: | :-------------: | :----------: |
 | ![Açılış & Karakter Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/1.jpg) | ![Açılış & Karakter Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/2.jpg) | ![Karakter Filtreleme](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.jpg) |
 | **Karakter Filtreleme** | **Karakter Detayı** | **Karakter Detayı** |
