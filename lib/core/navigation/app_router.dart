@@ -122,22 +122,22 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
           },
           destinations: [
             NavigationDestination(
-              icon: Icon(Icons.person_outline, color: Colors.white),
+              icon: Icon(Icons.person_outline, color: Colors.white.withOpacity(0.7)),
               selectedIcon: Icon(Icons.person, color: AppTheme.goldAccent),
               label: AppStrings.characters,
               tooltip: AppStrings.viewCharacters,
             ),
             NavigationDestination(
-              icon: Icon(Icons.auto_fix_high_outlined, color: Colors.white),
+              icon: Icon(Icons.auto_fix_high_outlined, color: Colors.white.withOpacity(0.7)),
               selectedIcon: Icon(Icons.auto_fix_high, color: AppTheme.goldAccent),
               label: AppStrings.spells,
               tooltip: AppStrings.viewSpells,
             ),
             NavigationDestination(
-              icon: Icon(Icons.person, color: Colors.white),
-              selectedIcon: Icon(Icons.person, color: AppTheme.goldAccent),
-              label: AppStrings.profile,
-              tooltip: AppStrings.viewProfile,
+              icon: Icon(Icons.favorite_border, color: Colors.white.withOpacity(0.7)),
+              selectedIcon: Icon(Icons.favorite, color: AppTheme.goldAccent),
+              label: AppStrings.favoritesTitle,
+              tooltip: AppStrings.favoritesTitle,
             ),
           ],
           surfaceTintColor: Colors.transparent,

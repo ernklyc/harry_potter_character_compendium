@@ -79,12 +79,12 @@ class AppTheme {
       ),
     ),
     cardTheme: CardTheme(
-      elevation: 2,
+      elevation: 0, // Gölge kaldırıldı
       clipBehavior: Clip.antiAlias, // Kenarları yuvarlatılmış resimler için
       color: const Color(0xFFF5EFE0), // Biraz daha koyu parşömen
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.brown.withOpacity(0.2), width: 1), // İnce çerçeve
+        side: BorderSide(color: AppTheme.goldAccent, width: 2.0), // Çerçeve rengi ve kalınlığı güncellendi
       ),
     ),
     textTheme: GoogleFonts.latoTextTheme(), // Ana metin fontu Lato
@@ -158,12 +158,12 @@ class AppTheme {
       ),
     ),
     cardTheme: CardTheme(
-      elevation: 3, // Karanlık temada biraz daha belirgin
+      elevation: 0, // Gölge kaldırıldı
       clipBehavior: Clip.antiAlias,
       color: const Color(0xFF3A2E25), // Koyu kart rengi
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: goldAccent.withOpacity(0.3), width: 1), // Altın çerçeve
+        side: BorderSide(color: AppTheme.goldAccent, width: 2.0), // Çerçeve rengi ve kalınlığı güncellendi
       ),
     ),
     textTheme: GoogleFonts.latoTextTheme(

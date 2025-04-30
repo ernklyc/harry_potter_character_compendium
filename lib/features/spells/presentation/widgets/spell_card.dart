@@ -28,13 +28,13 @@ class SpellCard extends ConsumerWidget {
     final isFavorite = favoriteSpellIds.contains(spell.id);
 
     return Card(
-      elevation: AppDimensions.cardElevation, // Sabit kullanıldı
+      // elevation: 0, // Tema tarafından sağlandığı için kaldırıldı
       margin: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium, vertical: AppDimensions.paddingSmall - 2),
-      shape: Theme.of(context).cardTheme.shape ?? RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-        side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3), width: 1),
-      ),
-      color: cardColor,
+      // shape: Theme.of(context).cardTheme.shape ?? RoundedRectangleBorder( // Tema tarafından sağlandığı için kaldırıldı
+      //   borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+      //   side: BorderSide(color: accentColor, width: 3.0), // Border kalınlığı 3.0 yapıldı
+      // ),
+      color: cardColor, // color temada tanımlı olsa da burada override edilebilir, o yüzden kalabilir
       child: Stack( // Stack widget'ı favori butonu için eklendi
         children: [
           Padding(
