@@ -115,12 +115,24 @@ class CharactersScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 3);
     final searchController = useTextEditingController();
     final showSearchBar = useState(false);
+    final currentTabIndex = useState(0); // Mevcut sekme indeksini tutmak için state
     
     final List<String> tabTitles = [
       AppStrings.charactersTabAll, 
       AppStrings.charactersTabStudents, 
       AppStrings.charactersTabStaff
     ];
+    
+    // Sekme değişikliklerini dinlemek için useEffect
+    useEffect(() {
+      void updateCurrentTab() {
+        if (!tabController.indexIsChanging) { // Animasyon sırasında güncelleme yapmamak için
+          currentTabIndex.value = tabController.index;
+        }
+      }
+      tabController.addListener(updateCurrentTab);
+      return () => tabController.removeListener(updateCurrentTab);
+    }, [tabController]);
     
     // useEffect ile arama değişimini izlemek için useEffect
     useEffect(() {
@@ -453,7 +465,7 @@ class CharactersScreen extends HookConsumerWidget {
                   hintStyle: AppTextStyles.bodyRegular(context).copyWith(color: Colors.white.withOpacity(0.7)),
                 ),
               )
-            : Text(tabTitles[tabController.index]), // Başlığı dinamik olarak al
+            : Text(tabTitles[currentTabIndex.value]), // Başlığı dinamik olarak state'ten al
           actions: [
             // Arama butonu
           Container(
