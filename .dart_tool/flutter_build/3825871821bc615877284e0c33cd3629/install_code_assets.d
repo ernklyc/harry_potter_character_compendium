@@ -1,0 +1,1 @@
+ C:\\harry_potter_character_compendium\\.dart_tool\\flutter_build\\3825871821bc615877284e0c33cd3629\\native_assets.json: 
