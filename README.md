@@ -1,7 +1,5 @@
 # Harry Potter Character Compendium
 
-# Harry Potter Karakter & Büyü Ansiklopedisi
-
 Bu Flutter uygulaması, Harry Potter evrenindeki karakterler ve büyüler hakkında bilgi sunan bir mobil ansiklopedidir. Kullanıcılar karakterleri ve büyüleri listeleyebilir, detaylarını görüntüleyebilir, favorilerine ekleyebilir ve çeşitli kriterlere göre filtreleme ve arama yapabilirler.
 
 ## ✨ Özellikler
@@ -22,13 +20,13 @@ Bu Flutter uygulaması, Harry Potter evrenindeki karakterler ve büyüler hakkı
 
 Uygulamanın çeşitli ekranlarına ait görünümler:
 
-| Açılış & Karakterler | Karakter Detayı | Büyü Listesi |
-| :------------------: | :-------------: | :----------: |
-| ![Ekran Görüntüsü 1](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/1.jpg) | ![Ekran Görüntüsü 2](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/2.jpg) | ![Ekran Görüntüsü 3](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.jpg) |
-| ![Ekran Görüntüsü 4](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.1.jpg) | ![Ekran Görüntüsü 5](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/4.jpg) | ![Ekran Görüntüsü 6](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/5.jpg) |
-| ![Ekran Görüntüsü 7](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/6.jpg) | ![Ekran Görüntüsü 8](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/7.jpg) | ![Ekran Görüntüsü 9](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/8.jpg) |
-
-
+| Açılış & Karakter Listesi | Karakter Detayı | Büyü Listesi |
+| :-----------------------: | :-------------: | :----------: |
+| ![Açılış & Karakter Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/1.jpg) | ![Karakter Detayı](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/2.jpg) | ![Büyü Listesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.jpg) |
+| **Favoriler (Karakter)** | **Favoriler (Büyü)** | **Karakter Filtreleme** |
+| ![Favoriler - Karakter Sekmesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/3.1.jpg) | ![Favoriler - Büyü Sekmesi](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/4.jpg) | ![Karakter Filtreleme Dialogu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/5.jpg) |
+| **Karakter Arama** | **Büyü Arama** | **Dil Değiştirme** |
+| ![Karakter Arama Sonucu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/6.jpg) | ![Büyü Arama Sonucu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/7.jpg) | ![Dil Değiştirme Butonu](https://raw.githubusercontent.com/ernklyc/harry_potter_character_compendium/main/assets/8.jpg) |
 
 ## 🚀 Teknolojiler ve Mimarî
 
