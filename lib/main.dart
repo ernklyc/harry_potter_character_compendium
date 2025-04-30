@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harry_potter_character_compendium/core/navigation/app_router.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'dart:async';
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
 // Uygulama çökmelerini yakalayacak olan fonksiyon
 void _handleError(Object error, StackTrace stack) {
@@ -13,9 +14,12 @@ void _handleError(Object error, StackTrace stack) {
 
 Future<void> main() async {
   // Zone içinde çalıştırarak yakalanmamış tüm hataları ele al
-  runZonedGuarded(() {
+  runZonedGuarded(() async {
     // Flutter bağlamını aynı zone içinde başlat
     WidgetsFlutterBinding.ensureInitialized();
+    
+    // Uygulama başlamadan dili yükle
+    await AppStrings.loadLanguage();
     
     // Tüm hataları yakalamak için bir hata yakalayıcı ekle
     FlutterError.onError = (FlutterErrorDetails details) {
@@ -31,8 +35,12 @@ Future<void> main() async {
     
     // Aynı zone içinde uygulamayı başlat
     runApp(
-      const ProviderScope(
-        child: MyApp(),
+      ProviderScope(
+        overrides: [
+          // currentLanguageProvider'ı yüklenen dil ile başlat
+          currentLanguageProvider.overrideWith((ref) => AppStrings.getCurrentLanguage()),
+        ],
+        child: const MyApp(),
       ),
     );
   }, _handleError);

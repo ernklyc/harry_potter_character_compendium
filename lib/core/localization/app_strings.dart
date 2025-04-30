@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Mevcut dil kodunu tutan StateProvider
 final currentLanguageProvider = StateProvider<String>((ref) => AppStrings.getCurrentLanguage());
@@ -7,14 +8,40 @@ final currentLanguageProvider = StateProvider<String>((ref) => AppStrings.getCur
 class AppStrings {
   // Aktif dil - varsayılan olarak Türkçe (tr)
   static String _currentLanguage = 'tr';
+  static const String _languagePrefKey = 'selectedLanguage';
 
   // Dil değiştirme metodu
-  static void setLanguage(String languageCode) {
+  static Future<void> setLanguage(String languageCode) async {
     if (languageCode == 'tr' || languageCode == 'en') {
       if (_currentLanguage != languageCode) {
         _currentLanguage = languageCode;
         _notifyListeners(); // Dil değiştiğinde dinleyicileri haberdar et
+
+        // Yeni dili kaydet
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(_languagePrefKey, languageCode);
+        } catch (e) {
+          // Hata yönetimi (örn. loglama)
+          print('Dil kaydedilirken hata: $e');
+        }
       }
+    }
+  }
+
+  // Uygulama başlarken dili yükle
+  static Future<void> loadLanguage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedLanguage = prefs.getString(_languagePrefKey);
+      if (savedLanguage != null && (savedLanguage == 'tr' || savedLanguage == 'en')) {
+        _currentLanguage = savedLanguage;
+      } else {
+        _currentLanguage = 'tr'; // Varsayılan dil
+      }
+    } catch (e) {
+       print('Dil yüklenirken hata: $e');
+      _currentLanguage = 'tr'; // Hata durumunda varsayılan dil
     }
   }
 
