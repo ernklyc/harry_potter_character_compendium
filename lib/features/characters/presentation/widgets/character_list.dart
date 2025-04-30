@@ -7,11 +7,13 @@ import 'package:harry_potter_character_compendium/core/localization/app_strings.
 class CharacterList extends StatelessWidget {
   final List<Character> characters;
   final Function(Character) onCharacterTap;
+  final ScrollController? controller;
 
   const CharacterList({
     super.key,
     required this.characters,
     required this.onCharacterTap,
+    this.controller,
   });
 
   @override
@@ -23,6 +25,7 @@ class CharacterList extends StatelessWidget {
     }
 
     return GridView.builder(
+      controller: controller,
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,

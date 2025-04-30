@@ -11,6 +11,7 @@ import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; // Boyutlar import edildi
 import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dart'; // Metin stilleri import edildi
 import 'package:harry_potter_character_compendium/core/localization/app_strings.dart'; // AppStrings import edildi
+import 'package:harry_potter_character_compendium/core/navigation/app_router.dart'; // Global ScrollController import edildi
 
 // Karakter filtreleme durumunu yönetmek için state provider
 final characterFiltersProvider = StateProvider<CharacterFilters>((ref) {
@@ -595,6 +596,7 @@ class CharactersScreen extends HookConsumerWidget {
                 return RefreshIndicator(
                   onRefresh: () => ref.refresh(allCharactersProvider.future),
                   child: CharacterList(
+                    controller: charactersScrollController,
                     characters: filteredCharacters,
                     onCharacterTap: navigateToCharacterDetail,
                   ),
@@ -646,6 +648,7 @@ class CharactersScreen extends HookConsumerWidget {
                 return RefreshIndicator(
                   onRefresh: () => ref.refresh(hogwartsStudentsProvider.future),
                   child: CharacterList(
+                    controller: charactersScrollController,
                     characters: filteredCharacters,
                     onCharacterTap: navigateToCharacterDetail,
                   ),
@@ -697,6 +700,7 @@ class CharactersScreen extends HookConsumerWidget {
                 return RefreshIndicator(
                   onRefresh: () => ref.refresh(hogwartsStaffProvider.future),
                   child: CharacterList(
+                    controller: charactersScrollController,
                     characters: filteredCharacters,
                     onCharacterTap: navigateToCharacterDetail,
                   ),

@@ -8,6 +8,11 @@ import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
+// Global ScrollController referansları
+final charactersScrollController = ScrollController();
+final spellsScrollController = ScrollController();
+final favoritesScrollController = ScrollController();
+
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -75,6 +80,10 @@ class ScaffoldWithNavBar extends StatefulWidget {
 }
 
 class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
+  // Çift tıklama algılaması için kullanılacak değişkenler
+  int _lastTappedIndex = -1; // Son tıklanan buton indeksi
+  DateTime _lastTapTime = DateTime.now(); // Son tıklama zamanı
+  
   @override
   void initState() {
     super.initState();
@@ -116,8 +125,61 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
           animationDuration: const Duration(milliseconds: 500),
           selectedIndex: widget.navigationShell.currentIndex,
           onDestinationSelected: (index) {
-            if (widget.navigationShell.currentIndex != index) {
+            // Aynı sekmeye/butona tıklanıp tıklanmadığını kontrol et
+            if (widget.navigationShell.currentIndex == index) {
+              // Aynı sekmeye tıklandı, çift tıklama mı kontrol edelim
+              final now = DateTime.now();
+              final timeDiff = now.difference(_lastTapTime).inMilliseconds;
+              
+              if (_lastTappedIndex == index && timeDiff < 500) { // 500ms içinde çift tıklama
+                // Çift tıklama tespit edildi, sayfa başına kaydır
+                switch (index) {
+                  case 0: // Karakterler sekmesi
+                    print("Karakterler sekmesinde çift tıklama algılandı - başa sar");
+                    // ScrollController'ı kullanarak sayfayı başa sar
+                    if (charactersScrollController.hasClients) {
+                      charactersScrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                    break;
+                  case 1: // Büyüler sekmesi
+                    print("Büyüler sekmesinde çift tıklama algılandı - başa sar");
+                    // ScrollController'ı kullanarak sayfayı başa sar
+                    if (spellsScrollController.hasClients) {
+                      spellsScrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                    break;
+                  case 2: // Favoriler sekmesi
+                    print("Favoriler sekmesinde çift tıklama algılandı - başa sar");
+                    // ScrollController'ı kullanarak sayfayı başa sar
+                    if (favoritesScrollController.hasClients) {
+                      favoritesScrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                    break;
+                }
+              }
+              
+              // Son tıklama bilgilerini güncelle
+              _lastTappedIndex = index;
+              _lastTapTime = now;
+            } else {
+              // Farklı sekmeye tıklandı, sekmeyi değiştir
               widget.navigationShell.goBranch(index, initialLocation: index == widget.navigationShell.currentIndex);
+              
+              // Son tıklama bilgilerini güncelle
+              _lastTappedIndex = index;
+              _lastTapTime = DateTime.now();
             }
           },
           destinations: [
