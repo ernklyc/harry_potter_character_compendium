@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 import 'package:harry_potter_character_compendium/core/navigation/app_router.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
-import 'dart:async';
-import 'package:harry_potter_character_compendium/core/localization/app_strings.dart';
 
 // Uygulama çökmelerini yakalayacak olan fonksiyon
 void _handleError(Object error, StackTrace stack) {
@@ -17,23 +20,32 @@ Future<void> main() async {
   runZonedGuarded(() async {
     // Flutter bağlamını aynı zone içinde başlat
     WidgetsFlutterBinding.ensureInitialized();
-    
+
+    // Android sistem navigasyon çubuğunu tamamen şeffaf yap
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.transparent,       // Alt çubuğun arka planı
+        systemNavigationBarDividerColor: Colors.transparent, // Ayrıcı da şeffaf
+        systemNavigationBarIconBrightness: Brightness.light, // İkon renkleri (ikonlar beyaz)
+      ),
+    );
+
     // Uygulama başlamadan dili yükle
     await AppStrings.loadLanguage();
-    
-    // Tüm hataları yakalamak için bir hata yakalayıcı ekle
+
+    // FlutterFramework hatalarını yakalamak için
     FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.presentError(details);
       _handleError(details.exception, details.stack ?? StackTrace.empty);
     };
-    
-    // Platformdan gelen asenkron hataları yakala
+
+    // Platform kaynaklı asenkron hataları yakala
     WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
       _handleError(error, stack);
       return true;
     };
-    
-    // Aynı zone içinde uygulamayı başlat
+
+    // Uygulamayı çalıştır
     runApp(
       ProviderScope(
         overrides: [
@@ -46,18 +58,29 @@ Future<void> main() async {
   }, _handleError);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends ConsumerWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'Harry Potter Karakter Ansiklopedisi',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       routerConfig: AppRouter.router,
-      debugShowCheckedModeBanner: false,
+      // Scaffold gövdesinin, alt çubuğun altına uzaması için
+      builder: (context, router) {
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarDividerColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
+          child: router!,
+        );
+      },
     );
   }
 }
