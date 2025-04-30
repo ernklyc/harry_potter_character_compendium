@@ -52,7 +52,7 @@ class ProfileScreen extends HookConsumerWidget {
         title: Text(AppStrings.favoritesTitle),
         bottom: PreferredSize(
           // Orijinal yükseklik değeri kullanıldı (veya tema varsayılanı)
-          preferredSize: const Size.fromHeight(kToolbarHeight - 10), // Yaklaşık eski değer
+          preferredSize: const Size.fromHeight(kToolbarHeight + 20), // Yaklaşık eski değer
           // Arka plan ve kenarlık kaldırıldı
           child: TabBar(
             controller: tabController,

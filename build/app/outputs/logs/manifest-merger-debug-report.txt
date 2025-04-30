@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 application
-INJECTED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:2:5-33:19
+INJECTED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:5:5-36:19
 INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml
 MERGED from [androidx.window:window:1.2.0] C:\Users\ernkl\.gradle\caches\transforms-3\3aa5955e0bc0c769bdf6e0531d45be1f\transformed\jetified-window-1.2.0\AndroidManifest.xml:22:5-29:19
 MERGED from [androidx.window:window:1.2.0] C:\Users\ernkl\.gradle\caches\transforms-3\3aa5955e0bc0c769bdf6e0531d45be1f\transformed\jetified-window-1.2.0\AndroidManifest.xml:22:5-29:19
@@ -21,8 +21,8 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\er
 	android:name
 		INJECTED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml
 manifest
-ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:1:1-45:12
-MERGED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:1:1-45:12
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:1:1-48:12
+MERGED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:1:1-48:12
 INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml:1:1-7:12
@@ -89,22 +89,28 @@ MERGED from [com.getkeepsafe.relinker:relinker:1.4.5] C:\Users\ernkl\.gradle\cac
 		INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:1:11-69
-queries
-ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:39:5-44:15
-intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
-ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:40:9-43:18
-action#android.intent.action.PROCESS_TEXT
-ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:41:13-72
-	android:name
-		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:41:21-70
-data
-ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:42:13-50
-	android:mimeType
-		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:42:19-48
 uses-permission#android.permission.INTERNET
-ADDED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml:6:5-66
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:2:5-67
+MERGED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:2:5-67
+MERGED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:2:5-67
 	android:name
-		ADDED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml:6:22-64
+		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:2:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:3:5-79
+	android:name
+		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:3:22-76
+queries
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:42:5-47:15
+intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:43:9-46:18
+action#android.intent.action.PROCESS_TEXT
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:44:13-72
+	android:name
+		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:44:21-70
+data
+ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:45:13-50
+	android:mimeType
+		ADDED from C:\harry_potter_character_compendium\android\app\src\main\AndroidManifest.xml:45:19-48
 uses-sdk
 INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\harry_potter_character_compendium\android\app\src\debug\AndroidManifest.xml
