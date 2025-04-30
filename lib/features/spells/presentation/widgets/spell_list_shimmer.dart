@@ -8,7 +8,7 @@ class SpellListShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardColor = Theme.of(context).cardTheme.color ?? Colors.grey[300]!;
-    final shimmerBaseColor = Theme.of(context).colorScheme.surfaceVariant;
+    final shimmerBaseColor = Theme.of(context).colorScheme.surfaceContainerHighest;
     final shimmerHighlightColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.1);
 
     return Shimmer.fromColors(

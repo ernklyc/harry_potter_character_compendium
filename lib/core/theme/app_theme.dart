@@ -51,15 +51,15 @@ class AppTheme {
       indicatorColor: goldAccent.withOpacity(0.9),
       height: 65,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      iconTheme: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return IconThemeData(color: primarySeed, size: 26);
         }
         return IconThemeData(color: Colors.white.withOpacity(0.8), size: 24);
       }),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final style = GoogleFonts.lato(fontSize: 11);
-        if (states.contains(MaterialState.selected)) {
+        if (states.contains(WidgetState.selected)) {
           return style.copyWith(fontWeight: FontWeight.bold, color: primarySeed);
         }
         return style.copyWith(color: Colors.white.withOpacity(0.8));
@@ -130,15 +130,15 @@ class AppTheme {
       indicatorColor: goldAccent.withOpacity(0.9),
       height: 65,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-      iconTheme: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return IconThemeData(color: primarySeed, size: 26);
         }
         return IconThemeData(color: Colors.white.withOpacity(0.8), size: 24);
       }),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final style = GoogleFonts.lato(fontSize: 11);
-        if (states.contains(MaterialState.selected)) {
+        if (states.contains(WidgetState.selected)) {
           return style.copyWith(fontWeight: FontWeight.bold, color: primarySeed);
         }
         return style.copyWith(color: Colors.white.withOpacity(0.8));

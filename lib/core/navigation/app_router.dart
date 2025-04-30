@@ -142,8 +142,8 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
           ],
           surfaceTintColor: Colors.transparent,
           elevation: 3, // İsteğe bağlı olarak elevation geri eklenebilir
-          labelTextStyle: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
               return GoogleFonts.lato(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,

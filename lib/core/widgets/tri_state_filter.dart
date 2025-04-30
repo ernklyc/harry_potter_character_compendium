@@ -16,13 +16,13 @@ class TriStateFilter extends StatelessWidget {
   final Color falseColor;
   
   const TriStateFilter({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
     required this.onChanged,
     this.trueColor = Colors.green,
     this.falseColor = Colors.red,
-  }) : super(key: key);
+  });
   
   // TriState değerine göre metin döndürür
   String _getTriStateText(TriState state) {

@@ -9,7 +9,7 @@ class CharacterListShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     // Renkler tema'dan alınır
     final cardColor = Theme.of(context).cardTheme.color ?? Colors.grey[300]!;
-    final shimmerBaseColor = Theme.of(context).colorScheme.surfaceVariant;
+    final shimmerBaseColor = Theme.of(context).colorScheme.surfaceContainerHighest;
     final shimmerHighlightColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.1);
 
     return Shimmer.fromColors(

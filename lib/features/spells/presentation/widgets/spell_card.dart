@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import
 import 'package:harry_potter_character_compendium/core/theme/app_theme.dart';
 import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; // Boyutlar import edildi

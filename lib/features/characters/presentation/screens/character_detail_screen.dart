@@ -72,7 +72,7 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
 
     return Scaffold(
       key: ValueKey(currentLanguage),
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       body: characterDetailAsync.when(
         data: (character) {
           if (character == null) {
@@ -256,7 +256,7 @@ class _CharacterDetailScreenState extends ConsumerState<CharacterDetailScreen> {
   }
 
   Widget _buildInfoSection(BuildContext context, String title, Color primaryColor, Color accentColor, List<Widget> children) {
-    final validChildren = children.where((w) => w is! SizedBox || (w is SizedBox && w.height == null)).toList();
+    final validChildren = children.where((w) => w is! SizedBox || (w.height == null)).toList();
     if (validChildren.isEmpty) return const SizedBox.shrink();
     
     final theme = Theme.of(context);

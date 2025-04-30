@@ -59,7 +59,7 @@ Future<void> main() async {
 }
 
 class MyApp extends ConsumerWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,7 +74,7 @@ class MyApp extends ConsumerWidget {
       builder: (context, router) {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: const SystemUiOverlayStyle(
-            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarColor: AppTheme.gryffindorPrimary,
             systemNavigationBarDividerColor: Colors.transparent,
             systemNavigationBarIconBrightness: Brightness.light,
           ),

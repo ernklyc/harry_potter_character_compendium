@@ -58,7 +58,7 @@ class SpellFilters {
 
 // ConsumerStatefulWidget yerine HookConsumerWidget kullanıldı
 class SpellsScreen extends HookConsumerWidget { 
-  const SpellsScreen({Key? key}) : super(key: key);
+  const SpellsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

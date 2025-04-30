@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 // import 'package:google_fonts/google_fonts.dart'; // Kaldırıldı
-import 'package:harry_potter_character_compendium/core/theme/app_theme.dart'; // Artık AppStrings kullanılacak
+// Artık AppStrings kullanılacak
 import 'package:harry_potter_character_compendium/core/theme/app_dimensions.dart'; 
 import 'package:harry_potter_character_compendium/core/theme/app_text_styles.dart'; 
 import 'package:harry_potter_character_compendium/core/localization/app_strings.dart'; // Stringler import edildi
